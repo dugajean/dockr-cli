@@ -1,0 +1,35 @@
+FROM httpd:2.4
+
+# Fix debconf warnings upon build
+ARG APP_DOMAIN
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Enable SSL
+RUN sed -i \
+        -e 's/^#\(Include .*httpd-ssl.conf\)/\1/' \
+        -e 's/^#\(Include .*httpd-vhosts.conf\)/\1/' \
+        -e 's/^#\(LoadModule .*mod_ssl.so\)/\1/' \
+        -e 's/^#\(LoadModule .*mod_socache_shmcb.so\)/\1/' \
+        -e 's/^#\(LoadModule .*mod_proxy.so\)/\1/' \
+        -e 's/^#\(LoadModule .*mod_proxy_html.so\)/\1/' \
+        -e 's/^#\(LoadModule .*mod_rewrite.so\)/\1/' \
+        -e 's/^#\(LoadModule .*mod_actions.so\)/\1/' \
+        -e 's/^#\(LoadModule .*mod_proxy_fcgi.so\)/\1/' \
+        -e 's/^#\(LoadModule .*mod_xml2enc.so\)/\1/' \
+        -e 's/^#\(LoadModule .*mod_vhost_alias.so\)/\1/' \
+        conf/httpd.conf
+
+RUN apt-get update && apt-get -y --no-install-recommends install ca-certificates apt-transport-https wget gnupg
+
+# Add PHP apt-repo
+RUN wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
+RUN echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
+
+# Install OpenSSL and PHP
+RUN apt-get update && apt-get -y --no-install-recommends install openssl php{PHP_VERSION} php{PHP_VERSION}-cli
+
+# Generate SSL certificate
+RUN openssl req -x509 -nodes -days 5000 -newkey rsa:2048 -keyout /usr/local/apache2/conf/server.key -out /usr/local/apache2/conf/server.crt \
+    -subj "/C=EU/ST=Germany/L=Berlin/O=AcmeCorp., Inc./OU=Agency/CN=${APP_DOMAIN}/emailAddress=webmaster@${APP_DOMAIN}"
+
+WORKDIR /app

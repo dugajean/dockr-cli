@@ -1,0 +1,3 @@
+upload_max_filesize = 2500M
+post_max_size = 2508M
+xdebug.remote_enable = 1

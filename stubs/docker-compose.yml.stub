@@ -1,0 +1,59 @@
+version: "3.1"
+services:
+    redis:
+      image: redis:alpine
+      container_name: {PROJECT_NAME}-redis
+      restart: unless-stopped
+
+    mysql:
+      image: mysql:5.7
+      container_name: {PROJECT_NAME}-mysql
+      working_dir: /app
+      volumes:
+        - .:/app
+        - dbdata:/var/lib/mysql
+      environment:
+        - MYSQL_ROOT_PASSWORD=dev
+        - MYSQL_DATABASE=dev
+        - MYSQL_USER=dev
+        - MYSQL_PASSWORD=dev
+      ports:
+        - "3306:3306"
+      restart: unless-stopped
+
+    webserver:
+      build:
+        # context: .docker/nginx
+        context: .docker/apache
+        args:
+          APP_DOMAIN: "{PROJECT_DOMAIN}"
+      environment:
+        - APP_DOMAIN={PROJECT_DOMAIN}
+      container_name: {PROJECT_NAME}-webserver
+      working_dir: /app
+      volumes:
+        - .:/app
+        - ./.docker/apache/httpd.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf
+#        - ./.docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+       - "80:80"
+       - "443:443"
+      restart: unless-stopped
+
+    php-fpm:
+      build: .docker/php-fpm
+      container_name: {PROJECT_NAME}-php-fpm
+      expose:
+        - "9000"
+      working_dir: /app
+      volumes:
+        - .:/app
+        - ./.docker/php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
+      environment:
+        - XDEBUG_CONFIG=remote_host=host.docker.internal
+      restart: unless-stopped
+
+volumes:
+  dbdata:
+    driver: local
+
