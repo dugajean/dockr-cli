@@ -3,11 +3,13 @@
 
 require __DIR__.'/vendor/autoload.php';
 
-use Dicker\Commands\InitCommand;
+use Dicker\Commands;
 use Symfony\Component\Console\Application;
 
 $application = new Application('Dicker CLI');
 
-$application->add(new InitCommand);
+$application->add(new Commands\InitCommand);
+$application->add(new Commands\SwitchPhpCommand());
+$application->add(new Commands\SwitchWebserverCommand);
 
 $application->run();
