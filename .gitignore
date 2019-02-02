@@ -1,2 +1,5 @@
 vendor/
 .idea/
+.docker/
+docker.json
+docker-compose.yml

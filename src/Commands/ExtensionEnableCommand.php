@@ -98,7 +98,15 @@ class ExtensionEnableCommand extends Command
         $extensions = $input->getArgument('extensions');
 
         if (count($extensions) > 0) {
+            $availableExtensions = array_keys(self::$availableExtensions);
 
+            foreach ($extensions as $extension) {
+                if (!in_array($extension, $availableExtensions)) {
+                    throw new \RuntimeException("Can't find extension '$extension'. Please remove it or adjust the php-fpm Dockerfile manually.");
+                }
+            }
+
+            //
         }
     }
 
@@ -125,7 +133,7 @@ class ExtensionEnableCommand extends Command
         $table->setHeaders(['Available extenions'])->setRows(
             array_map(function ($item) {
                 return [$item];
-            }, array_keys(self::AVAILABLE_EXTENSIONS))
+            }, array_keys(self::$availableExtensions))
         );
         $table->render();
     }
