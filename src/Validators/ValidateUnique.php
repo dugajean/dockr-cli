@@ -1,20 +1,18 @@
 <?php
 
-namespace Dicker\Validators;
+namespace Dockr\Validators;
 
 class ValidateUnique implements ValidatorInterface
 {
     /**
      * @inheritdoc
      */
-    public function callback()
+    public function __invoke($answer)
     {
-        return function ($answer) {
-            if (is_array($answer) && $answer != array_unique($answer)) {
-                throw new \RuntimeException('The choices must be unique. Please try again.');
-            }
+        if (is_array($answer) && $answer != array_unique($answer)) {
+            throw new \RuntimeException('The choices must be unique. Please try again.');
+        }
 
-            return $answer;
-        };
+        return $answer;
     }
 }

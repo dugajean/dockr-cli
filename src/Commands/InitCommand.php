@@ -1,9 +1,10 @@
 <?php
 
-namespace Dicker\Commands;
+namespace Dockr\Commands;
 
-use Dicker\Wizards\Question;
-use Dicker\Wizards\ChoiceQuestion;
+use Dockr\Config;
+use Dockr\Questions\Question;
+use Dockr\Questions\ChoiceQuestion;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -55,6 +56,7 @@ class InitCommand extends Command
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
      * @return int|void|null
+     * @throws \Pouch\Exceptions\NotFoundException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -62,26 +64,29 @@ class InitCommand extends Command
 
         $this->runWizard();
 //        $this->performReplacements();
-//        $this->storeConfig();
+        $this->storeConfig();
     }
 
     /**
      * Store JSON config file with all the data.
      *
-     * @return bool
+     * @return void
+     * @throws \Pouch\Exceptions\NotFoundException
      */
     public function storeConfig()
     {
-        $config = json_encode([
+        $config = pouch()->resolve(Config::class);
+
+        $config->set([
             'project-name' => $this->projectName,
             'project-domain' => $this->projectDomain,
             'webserver' => $this->webServer,
             'cache-store' => $this->cacheStore,
             'php-version' => $this->phpVersion,
-            'php-extension' => $this->phpExtensions
-        ], JSON_PRETTY_PRINT);
+            'php-extensions' => $this->phpExtensions
+        ]);
 
-        return (bool)file_put_contents('./dicker.json', $config);
+        $this->output->writeln('Configuration file has been saved under dockr.json');
     }
 
     /**
@@ -122,7 +127,7 @@ class InitCommand extends Command
     {
         $defaultDomain = str_replace(' ', '-', strtolower($this->projectName)).'.';
 
-        $this->projectName = (new Question('Please enter the domain for the project: ', $defaultDomain . 'local'))
+        $this->projectDomain = (new Question('Please enter the domain for the project: ', $defaultDomain . 'local'))
             ->setAutocomplete([$defaultDomain])
             ->render()
             ->outputAnswer()
@@ -186,24 +191,25 @@ class InitCommand extends Command
     {
         $question = (new ChoiceQuestion(
             'Please choose which PHP extensions should be included in your project (comma separated list): ',
-            array_keys(ExtensionEnableCommand::AVAILABLE_EXTENSIONS), null, true
-        ))
-            ->setValidators(['unique', 'not_empty'])
-            ->render();
+            array_keys(ExtensionEnableCommand::$availableExtensions), null, true
+        ))->render();
 
-        $question->adjustAnswer(function (array $choices) {
+        $question->adjustAnswer(function ($choices) {
             $resultArray = [];
             foreach ($choices as $extensionName) {
-                $actualExtensionName = ExtensionEnableCommand::AVAILABLE_EXTENSIONS[$extensionName];
+                $actualExtensionName = ExtensionEnableCommand::$availableExtensions[$extensionName];
                 if (strpos($actualExtensionName, '{PHP_VERSION}') !== false) {
                     $actualExtensionName = str_replace('{PHP_VERSION}', $this->phpVersion, $actualExtensionName);
                 }
-                $resultArray[] = $actualExtensionName;
+                ExtensionEnableCommand::$availableExtensions[$extensionName] = $actualExtensionName;
+                $resultArray[] = $extensionName;
             }
-            return $resultArray;
+            return array_unique($resultArray);
         })->outputAnswer();
 
-        $this->phpExtensions = $question->getAnswer();
+        $this->phpExtensions = array_map(function($item) {
+            return ExtensionEnableCommand::$availableExtensions[$item];
+        }, $question->getAnswer());
     }
 
     /**
@@ -251,6 +257,4 @@ class InitCommand extends Command
             $haystack
         );
     }
-
-
 }

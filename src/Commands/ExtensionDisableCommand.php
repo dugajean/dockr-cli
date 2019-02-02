@@ -1,6 +1,6 @@
 <?php
 
-namespace Dicker\Commands;
+namespace Dockr\Commands;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

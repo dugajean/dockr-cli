@@ -1,8 +1,8 @@
 <?php
 
-namespace Dicker\Wizards;
+namespace Dockr\Questions;
 
-use Dicker\Validators\ValidatorInterface;
+use Dockr\Validators\ValidatorInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -203,7 +203,9 @@ class Question implements QuestionInterface
             $validatorClass = $validatorNamespace.'Validate'.ucwords(str_replace(['-', '_'], '', $validator));
 
             if (class_exists($validatorClass)) {
-                $question->setValidator((new $validatorClass)->callback());
+                $question->setValidator(new $validatorClass());
+            } else {
+                throw new \RuntimeException("Validator '{$validatorClass}' not found.");
             }
         }
     }

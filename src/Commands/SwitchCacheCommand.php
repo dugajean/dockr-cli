@@ -1,6 +1,6 @@
 <?php
 
-namespace Dicker\Commands;
+namespace Dockr\Commands;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,7 +27,7 @@ class SwitchCacheCommand extends Command
         $options = implode(',', self::CACHE_STORES);
 
         $this->setDescription('Switch the cache store for your project.')
-            ->setHelp("Switches the cache store of a project previously setup with Dicker. Allowed values are: {$options}");
+            ->setHelp("Switches the cache store of a project previously setup with Dockr. Allowed values are: {$options}");
     }
 
     /**

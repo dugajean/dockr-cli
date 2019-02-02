@@ -1,20 +1,18 @@
 <?php
 
-namespace Dicker\Validators;
+namespace Dockr\Validators;
 
 class ValidateNotEmpty implements ValidatorInterface
 {
     /**
      * @inheritdoc
      */
-    public function callback()
+    public function __invoke($answer)
     {
-        return function ($answer) {
-            if (empty($answer) && !is_numeric($answer)) {
-                throw new \RuntimeException('This field cannot be empty. Please try again.');
-            }
+        if (empty($answer) && !is_numeric($answer)) {
+            throw new \RuntimeException('This field cannot be empty. Please try again.');
+        }
 
-            return $answer;
-        };
+        return $answer;
     }
 }

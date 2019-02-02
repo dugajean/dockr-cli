@@ -1,6 +1,6 @@
 <?php
 
-namespace Dicker\Commands;
+namespace Dockr\Commands;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,7 +27,7 @@ class SwitchPhpCommand extends Command
         $options = implode(',', self::PHP_VERSIONS);
 
         $this->setDescription('Switch the PHP version of this project.')
-            ->setHelp("Switches the PHP version of a project previously setup with Dicker. Allowed values are: {$options}");
+            ->setHelp("Switches the PHP version of a project previously setup with Dockr. Allowed values are: {$options}");
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dicker\Wizards;
+namespace Dockr\Questions;
 
 interface QuestionInterface
 {

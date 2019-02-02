@@ -3,18 +3,10 @@
 
 require __DIR__.'/vendor/autoload.php';
 
-use Pouch\Pouch;
-use Dicker\Commands;
-use Symfony\Component\Finder\Finder;
+use Dockr\Commands;
 use Symfony\Component\Console\Application;
 
-Pouch::bootstrap(__DIR__);
-
-pouch()->bind('stubsFinder', function () {
-    return (new Finder())->in(__DIR__.'/stubs')->name('*.stub')->ignoreDotFiles(false);
-});
-
-$application = new Application('Dicker CLI');
+$application = new Application('Dockr CLI 1.0');
 
 $application->add(new Commands\InitCommand);
 $application->add(new Commands\SwitchWebserverCommand);

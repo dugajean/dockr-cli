@@ -1,6 +1,6 @@
 <?php
 
-namespace Dicker\Commands;
+namespace Dockr\Commands;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -30,7 +30,7 @@ class SwitchWebserverCommand extends Command
         $options = implode(',', self::WEBSERVERS);
 
         $this->setDescription('Switch the webserver powering this project.')
-            ->setHelp("Switches the webserver of a project previously setup with Dicker. Allowed values are: {$options}");
+            ->setHelp("Switches the webserver of a project previously setup with Dockr. Allowed values are: {$options}");
     }
 
     /**

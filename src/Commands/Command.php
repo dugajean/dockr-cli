@@ -1,8 +1,8 @@
 <?php
 
-namespace Dicker\Commands;
+namespace Dockr\Commands;
 
-use Dicker\Wizards\Question;
+use Dockr\Questions\Question;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;

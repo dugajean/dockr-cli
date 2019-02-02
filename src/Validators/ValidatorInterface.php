@@ -1,11 +1,14 @@
 <?php
 
-namespace Dicker\Validators;
+namespace Dockr\Validators;
 
 interface ValidatorInterface
 {
     /**
-     * @return \Closure
+     * @param mixed $answer
+     *
+     * @return mixed
+     * @throws \RuntimeException
      */
-    public function callback();
+    public function __invoke($answer);
 }

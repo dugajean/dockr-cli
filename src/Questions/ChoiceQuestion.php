@@ -1,6 +1,6 @@
 <?php
 
-namespace Dicker\Wizards;
+namespace Dockr\Questions;
 
 use Symfony\Component\Console\Question\Question as SymfonyQuestion;
 use Symfony\Component\Console\Question\ChoiceQuestion as SymfonyChoiceQuestion;
@@ -23,12 +23,12 @@ class ChoiceQuestion extends Question implements QuestionInterface
      * @param string $question
      * @param array  $choices
      * @param int    $default
-     * @param bool   $multi
+     * @param bool   $multiChoice
      */
-    public function __construct($question, array $choices, $default = null, $multi = false)
+    public function __construct($question, array $choices, $default = null, $multiChoice = false)
     {
         $this->choices = $choices;
-        $this->multiChoice = $multi;
+        $this->multiChoice = $multiChoice;
 
         parent::__construct($question, $default);
     }
@@ -36,7 +36,7 @@ class ChoiceQuestion extends Question implements QuestionInterface
     /**
      * Display the question to the user.
      *
-     * @return \Dicker\Wizards\Question
+     * @return \Dockr\Questions\Question
      */
     public function render()
     {

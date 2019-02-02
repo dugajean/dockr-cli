@@ -8,7 +8,10 @@
     },
     "autoload": {
         "psr-4": {
-            "Dicker\\": "src/"
-        }
+            "Dockr\\": "src/"
+        },
+        "files": [
+            "config/pouch.php"
+        ]
     }
 }

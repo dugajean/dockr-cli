@@ -1,0 +1,13 @@
+{
+    "project-name": "test",
+    "project-domain": "test.local",
+    "webserver": "apache",
+    "cache-store": "redis",
+    "php-version": "7.2",
+    "php-extensions": [
+        "php7.2-mysql",
+        "php-gearman",
+        "php7.2-pgsql",
+        "php-redis"
+    ]
+}
