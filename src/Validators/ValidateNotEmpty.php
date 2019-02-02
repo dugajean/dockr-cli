@@ -2,26 +2,19 @@
 
 namespace Dicker\Validators;
 
-/**
- * Class ValidateNotEmpty
- *
- * @package \Dicker\Validators
- */
-class ValidateNotEmpty
+class ValidateNotEmpty extends AbstractValidator
 {
     /**
-     * @param $answer
-     *
-     * @return mixed
+     * @inheritdoc
      */
-    public function __invoke($answer)
+    public function callback()
     {
-        if (empty($answer) && !is_numeric($answer)) {
-            throw new \RuntimeException(
-                'The project name cannot be empty.'
-            );
-        }
+        return function ($answer) {
+            if (empty($answer) && !is_numeric($answer)) {
+                throw new \RuntimeException("The {$this->field} field cannot be empty. Please try again.");
+            }
 
-        return $answer;
+            return $answer;
+        };
     }
 }

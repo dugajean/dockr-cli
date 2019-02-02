@@ -6,19 +6,12 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SwitchWebserverCommand extends Command
+class ExtensionDisableCommand extends Command
 {
     /**
      * @var string
      */
-    protected static $defaultName = 'switch:webserver';
-
-    const WEBSERVERS = [
-        'apache', 'nginx'
-    ];
-
-    const APACHE_CONF = '/usr/local/apache2/conf/extra/httpd-vhosts.conf';
-    const NGINX_CONF = '/etc/nginx/conf.d/default.conf';
+    protected static $defaultName = 'ext:disable';
 
     /**
      * Configure the command
@@ -27,10 +20,8 @@ class SwitchWebserverCommand extends Command
      */
     protected function configure()
     {
-        $options = implode(',', self::WEBSERVERS);
-
-        $this->setDescription('Switch the webserver powering this project.')
-            ->setHelp("Switches the webserver of a project previously setup with Dicker. Allowed values are: {$options}");
+        $this->setDescription('Disable one or more PHP modules.')
+            ->setHelp('Provide a comma separated list of PHP modules that you want to disable. Use --list to see all available options.');
     }
 
     /**
@@ -41,6 +32,6 @@ class SwitchWebserverCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // ...
+//        $this->setIO($input, $output);
     }
 }

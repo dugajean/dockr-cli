@@ -6,19 +6,16 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SwitchWebserverCommand extends Command
+class SwitchCacheCommand extends Command
 {
     /**
      * @var string
      */
-    protected static $defaultName = 'switch:webserver';
+    protected static $defaultName = 'switch:cache';
 
-    const WEBSERVERS = [
-        'apache', 'nginx'
+    const CACHE_STORES = [
+        'redis', 'memcached'
     ];
-
-    const APACHE_CONF = '/usr/local/apache2/conf/extra/httpd-vhosts.conf';
-    const NGINX_CONF = '/etc/nginx/conf.d/default.conf';
 
     /**
      * Configure the command
@@ -27,10 +24,10 @@ class SwitchWebserverCommand extends Command
      */
     protected function configure()
     {
-        $options = implode(',', self::WEBSERVERS);
+        $options = implode(',', self::CACHE_STORES);
 
-        $this->setDescription('Switch the webserver powering this project.')
-            ->setHelp("Switches the webserver of a project previously setup with Dicker. Allowed values are: {$options}");
+        $this->setDescription('Switch the cache store for your project.')
+            ->setHelp("Switches the cache store of a project previously setup with Dicker. Allowed values are: {$options}");
     }
 
     /**
