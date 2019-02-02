@@ -13,5 +13,6 @@ $application->add(new Commands\SwitchWebserverCommand);
 $application->add(new Commands\SwitchCacheCommand);
 $application->add(new Commands\SwitchPhpCommand);
 $application->add(new Commands\ExtensionEnableCommand);
+$application->add(new Commands\ExtensionDisableCommand);
 
 $application->run();
