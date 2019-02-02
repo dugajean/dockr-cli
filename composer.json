@@ -1,5 +1,7 @@
 {
     "require": {
+        "ext-json": "*",
+        "ext-ctype": "*",
         "symfony/console": "^4.2",
         "symfony/finder": "^4.2",
         "dugajean/pouch": "^0.5.0"

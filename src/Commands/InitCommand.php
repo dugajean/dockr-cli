@@ -2,13 +2,10 @@
 
 namespace Dicker\Commands;
 
-use Dicker\Validators\ValidateNotEmpty;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Question\Question;
+use Dicker\Wizards\Question;
+use Dicker\Wizards\ChoiceQuestion;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Finder\Finder;
 
 class InitCommand extends Command
 {
@@ -61,10 +58,11 @@ class InitCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->setIO($input, $output);
+        parent::execute($input, $output);
+
         $this->runWizard();
-        $this->performReplacements();
-        $this->storeConfig();
+//        $this->performReplacements();
+//        $this->storeConfig();
     }
 
     /**
@@ -84,19 +82,6 @@ class InitCommand extends Command
         ], JSON_PRETTY_PRINT);
 
         return (bool)file_put_contents('./dicker.json', $config);
-    }
-
-    /**
-     * Set input and output props.
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface   $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     */
-    protected function setIO(InputInterface $input, OutputInterface $output)
-    {
-        $this->input = $input;
-        $this->output = $output;
-        $this->questionHelper = $this->getHelper('question');
     }
 
     /**
@@ -121,11 +106,11 @@ class InitCommand extends Command
      */
     protected function askProjectName()
     {
-        $projectNameQuestion = new Question('Please enter the name of the project: ');
-        $projectNameQuestion->setValidator((new ValidateNotEmpty('Project Name'))->callback());
-        $this->projectName = $this->questionHelper->ask($this->input, $this->output, $projectNameQuestion);
-
-        $this->outputAnswer($this->projectName);
+        $this->projectName = (new Question('Please enter the name of the project: '))
+            ->setValidators(['not_empty'])
+            ->render()
+            ->outputAnswer()
+            ->getAnswer();
     }
 
     /**
@@ -136,12 +121,12 @@ class InitCommand extends Command
     protected function askProjectDomain()
     {
         $defaultDomain = str_replace(' ', '-', strtolower($this->projectName)).'.';
-        $domainQuestion = new Question("Please enter the domain for the project [{$defaultDomain}local]: ", $defaultDomain.'local');
-        $domainQuestion->setAutocompleterValues([$defaultDomain]);
 
-        $this->projectDomain = $this->questionHelper->ask($this->input, $this->output, $domainQuestion);
-
-        $this->outputAnswer($this->projectDomain);
+        $this->projectName = (new Question('Please enter the domain for the project: ', $defaultDomain . 'local'))
+            ->setAutocomplete([$defaultDomain])
+            ->render()
+            ->outputAnswer()
+            ->getAnswer();
     }
 
     /**
@@ -151,17 +136,13 @@ class InitCommand extends Command
      */
     protected function askWebServer()
     {
-        $webServerQuestion = new ChoiceQuestion(
-            'Please select the webserver you want your project to run on [apache]: ',
+        $this->webServer = (new ChoiceQuestion(
+            'Please select the webserver you want your project to run on',
             SwitchWebserverCommand::WEBSERVERS, 0
-        );
-
-        $this->webServer = $this->questionHelper->ask($this->input, $this->output, $webServerQuestion);
-        $this->webServer = is_numeric($this->webServer) ?
-            SwitchWebserverCommand::WEBSERVERS[$this->webServer] :
-            $this->webServer;
-
-        $this->outputAnswer($this->webServer);
+        ))
+            ->render()
+            ->outputAnswer()
+            ->getAnswer();
     }
 
     /**
@@ -171,17 +152,13 @@ class InitCommand extends Command
      */
     protected function askCacheStore()
     {
-        $cacheStoreQuestion = new ChoiceQuestion(
-            'Please select the cache store you want your project to run on [redis]: ',
+        $this->cacheStore = (new ChoiceQuestion(
+            'Please select the cache store you want your project to run on',
             SwitchCacheCommand::CACHE_STORES, 0
-        );
-
-        $this->cacheStore = $this->questionHelper->ask($this->input, $this->output, $cacheStoreQuestion);
-        $this->cacheStore = is_numeric($this->cacheStore) ?
-            SwitchCacheCommand::CACHE_STORES[$this->cacheStore] :
-            $this->cacheStore;
-
-        $this->outputAnswer($this->cacheStore);
+        ))
+            ->render()
+            ->outputAnswer()
+            ->getAnswer();
     }
 
     /**
@@ -191,17 +168,13 @@ class InitCommand extends Command
      */
     protected function askPhpVersion()
     {
-        $phpVersionQuestion = new ChoiceQuestion(
-            'Please select the PHP version you want your project to run on [7.2]: ',
+        $this->phpVersion = (new ChoiceQuestion(
+            'Please select the PHP version you want your project to run on',
             SwitchPhpCommand::PHP_VERSIONS, 2
-        );
-
-        $this->phpVersion = $this->questionHelper->ask($this->input, $this->output, $phpVersionQuestion);
-        $this->phpVersion = ctype_digit($this->phpVersion) ?
-            SwitchPhpCommand::PHP_VERSIONS[$this->phpVersion] :
-            $this->phpVersion;
-
-        $this->outputAnswer($this->phpVersion);
+        ))
+            ->render()
+            ->outputAnswer()
+            ->getAnswer();
     }
 
     /**
@@ -211,29 +184,26 @@ class InitCommand extends Command
      */
     protected function askPhpExtensions()
     {
-        $availableExtensionKeys = array_keys(ExtensionEnableCommand::AVAILABLE_EXTENSIONS);
-
-        $phpExtensionsQuestions = new ChoiceQuestion(
+        $question = (new ChoiceQuestion(
             'Please choose which PHP extensions should be included in your project (comma separated list): ',
-            $availableExtensionKeys
-        );
+            array_keys(ExtensionEnableCommand::AVAILABLE_EXTENSIONS), null, true
+        ))
+            ->setValidators(['unique', 'not_empty'])
+            ->render();
 
-        $phpExtensionsQuestions->setValidator((new ValidateNotEmpty('PHP Extensions'))->callback());
-        $phpExtensionsQuestions->setMultiselect(true);
-
-        $plainExtensionNames = array_unique($this->questionHelper->ask($this->input, $this->output, $phpExtensionsQuestions));
-
-        foreach ($plainExtensionNames as $extensionName) {
-            $actualExtensionName = ExtensionEnableCommand::AVAILABLE_EXTENSIONS[$extensionName];
-
-            if (strpos($actualExtensionName, '{PHP_VERSION}') !== false) {
-                $actualExtensionName = str_replace('{PHP_VERSION}', $this->phpVersion, $actualExtensionName);
+        $question->adjustAnswer(function (array $choices) {
+            $resultArray = [];
+            foreach ($choices as $extensionName) {
+                $actualExtensionName = ExtensionEnableCommand::AVAILABLE_EXTENSIONS[$extensionName];
+                if (strpos($actualExtensionName, '{PHP_VERSION}') !== false) {
+                    $actualExtensionName = str_replace('{PHP_VERSION}', $this->phpVersion, $actualExtensionName);
+                }
+                $resultArray[] = $actualExtensionName;
             }
+            return $resultArray;
+        })->outputAnswer();
 
-            $this->phpExtensions[] = $actualExtensionName;
-        }
-
-        $this->outputAnswer(implode(', ', $plainExtensionNames));
+        $this->phpExtensions = $question->getAnswer();
     }
 
     /**
@@ -282,15 +252,5 @@ class InitCommand extends Command
         );
     }
 
-    /**
-     * Outputs line in green.
-     *
-     * @param $outputText
-     *
-     * @return void
-     */
-    protected function outputAnswer($outputText)
-    {
-        $this->output->writeln("> <info>{$outputText}</info>");
-    }
+
 }

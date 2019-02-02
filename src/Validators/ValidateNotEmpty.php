@@ -2,7 +2,7 @@
 
 namespace Dicker\Validators;
 
-class ValidateNotEmpty extends AbstractValidator
+class ValidateNotEmpty implements ValidatorInterface
 {
     /**
      * @inheritdoc
@@ -11,7 +11,7 @@ class ValidateNotEmpty extends AbstractValidator
     {
         return function ($answer) {
             if (empty($answer) && !is_numeric($answer)) {
-                throw new \RuntimeException("The {$this->field} field cannot be empty. Please try again.");
+                throw new \RuntimeException('This field cannot be empty. Please try again.');
             }
 
             return $answer;
