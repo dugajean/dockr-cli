@@ -9,9 +9,9 @@ use Symfony\Component\Console\Application;
 $application = new Application('Dockr CLI 1.0');
 
 $application->add(new Commands\InitCommand);
-$application->add(new Commands\SwitchWebserverCommand);
-$application->add(new Commands\SwitchCacheCommand);
-$application->add(new Commands\SwitchPhpCommand);
+$application->add(new Commands\SwitchWebServerCommand);
+$application->add(new Commands\SwitchCacheStoreCommand);
+$application->add(new Commands\SwitchPhpVersionCommand);
 $application->add(new Commands\ExtensionEnableCommand);
 $application->add(new Commands\ExtensionDisableCommand);
 

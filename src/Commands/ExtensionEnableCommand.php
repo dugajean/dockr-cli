@@ -88,7 +88,7 @@ class ExtensionEnableCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->setIO($input, $output);
+        parent::execute($input, $output);
 
         if ($input->getOption('list')) {
             $this->listExtensions();

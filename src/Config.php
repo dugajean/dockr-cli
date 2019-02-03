@@ -18,7 +18,7 @@ class Config
      * Required config structure.
      */
     const STRUCTURE = [
-        'project-name', 'project-domain', 'webserver',
+        'project-name', 'project-domain', 'web-server',
         'cache-store', 'php-version', 'php-extensions',
     ];
 
@@ -59,14 +59,18 @@ class Config
     /**
      * Fetch a key from the config.
      *
-     * @param string $key
+     * @param string|null $key
      *
      * @return string
      */
-    public function get($key)
+    public function get($key = null)
     {
         if (!$this->data) {
             throw new \RuntimeException('Config file does not exist or ist empty.');
+        }
+
+        if ($key === null) {
+            return $this->data;
         }
 
         return array_key_exists($key, $this->data) ? $this->data[$key] : null;

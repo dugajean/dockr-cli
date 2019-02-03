@@ -11,6 +11,7 @@
             "Dockr\\": "src/"
         },
         "files": [
+            "src/Helpers/utils.php",
             "config/pouch.php"
         ]
     }

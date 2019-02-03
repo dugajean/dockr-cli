@@ -2,7 +2,6 @@
 
 namespace Dockr\Commands;
 
-use Dockr\Config;
 use Dockr\Questions\Question;
 use Dockr\Questions\ChoiceQuestion;
 use Symfony\Component\Console\Input\InputInterface;
@@ -63,7 +62,7 @@ class InitCommand extends Command
         parent::execute($input, $output);
 
         $this->runWizard();
-//        $this->performReplacements();
+        $this->performReplacements();
         $this->storeConfig();
     }
 
@@ -71,16 +70,13 @@ class InitCommand extends Command
      * Store JSON config file with all the data.
      *
      * @return void
-     * @throws \Pouch\Exceptions\NotFoundException
      */
     public function storeConfig()
     {
-        $config = pouch()->resolve(Config::class);
-
-        $config->set([
+        $this->config->set([
             'project-name' => $this->projectName,
             'project-domain' => $this->projectDomain,
-            'webserver' => $this->webServer,
+            'web-server' => $this->webServer,
             'cache-store' => $this->cacheStore,
             'php-version' => $this->phpVersion,
             'php-extensions' => $this->phpExtensions
@@ -143,7 +139,7 @@ class InitCommand extends Command
     {
         $this->webServer = (new ChoiceQuestion(
             'Please select the webserver you want your project to run on',
-            SwitchWebserverCommand::WEBSERVERS, 0
+            SwitchWebServerCommand::getOptions(), 0
         ))
             ->render()
             ->outputAnswer()
@@ -159,7 +155,7 @@ class InitCommand extends Command
     {
         $this->cacheStore = (new ChoiceQuestion(
             'Please select the cache store you want your project to run on',
-            SwitchCacheCommand::CACHE_STORES, 0
+            SwitchCacheStoreCommand::getOptions(), 0
         ))
             ->render()
             ->outputAnswer()
@@ -175,7 +171,7 @@ class InitCommand extends Command
     {
         $this->phpVersion = (new ChoiceQuestion(
             'Please select the PHP version you want your project to run on',
-            SwitchPhpCommand::PHP_VERSIONS, 2
+            SwitchPhpVersionCommand::getOptions(), 2
         ))
             ->render()
             ->outputAnswer()
@@ -215,19 +211,19 @@ class InitCommand extends Command
     /**
      * Prepare the stubs
      */
-    public function performReplacements()
+    protected function performReplacements()
     {
-        $finder = pouch()->resolve('stubsFinder');
+        $finder = pouch()->resolve('stubs_finder');
 
         foreach ($finder as $file) {
-            $folderStructure = './'.$file->getRelativePath();
+            $folderStructure = current_path($file->getRelativePath());
 
             if (! file_exists($folderStructure)) {
                 mkdir($folderStructure, 0777, true);
             }
 
             $contents = $this->replacementQuery($file->getContents());
-            $fileName = './'.str_replace('.stub', '', $file->getRelativePathname());
+            $fileName = current_path(str_replace('.stub', '', $file->getRelativePathname()));
             file_put_contents($fileName, $contents);
         }
     }
@@ -241,7 +237,7 @@ class InitCommand extends Command
      */
     public function replacementQuery($haystack)
     {
-        $vhost = constant(SwitchWebserverCommand::class.'::'.strtoupper($this->webServer).'_CONF');
+        $vhost = constant(SwitchWebServerCommand::class.'::'.strtoupper($this->webServer).'_CONF');
         $rawPhp = str_replace('.', '', $this->phpVersion);
         $phpExts = implode(' ', $this->phpExtensions);
 
@@ -256,5 +252,15 @@ class InitCommand extends Command
             ],
             $haystack
         );
+    }
+
+    /**
+     * Return options
+     *
+     * @return array
+     */
+    public static function getOptions()
+    {
+        return [];
     }
 }

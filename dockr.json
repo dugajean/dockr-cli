@@ -1,0 +1,13 @@
+{
+    "project-name": "test",
+    "project-domain": "test.local",
+    "web-server": "nginx",
+    "cache-store": "memcached",
+    "php-version": "7.1",
+    "php-extensions": [
+        "php7.2-mysql",
+        "php7.2-pgsql",
+        "php-redis"
+    ],
+    "webserver": "nginx"
+}
