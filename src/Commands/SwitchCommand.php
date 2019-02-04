@@ -5,7 +5,7 @@ namespace Dockr\Commands;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-abstract class ReplacementCommand extends Command
+abstract class SwitchCommand extends Command
 {
     /**
      * @var string
@@ -27,7 +27,7 @@ abstract class ReplacementCommand extends Command
      *
      * @return array
      */
-    abstract public static function getOptions();
+    abstract public static function getChoices();
 
     /**
      * @param \Symfony\Component\Console\Input\InputInterface   $input
@@ -64,8 +64,8 @@ abstract class ReplacementCommand extends Command
     {
         $currentProp = snake_case($this->currentProp, ' ');
 
-        if (!in_array($this->newValue, static::getOptions())) {
-            throw new \RuntimeException("Invalid {$currentProp} inputted. Must be: " . implode(', ', static::getOptions()));
+        if (!in_array($this->newValue, static::getChoices())) {
+            throw new \RuntimeException("Invalid {$currentProp} inputted. Must be: " . implode(', ', static::getChoices()));
         }
 
         if ($this->newValue == $this->{$this->currentProp}) {

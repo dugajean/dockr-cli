@@ -5,7 +5,7 @@ namespace Dockr\Commands;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 
-class SwitchWebServerCommand extends ReplacementCommand
+class SwitchWebServerCommand extends SwitchCommand
 {
     const NGINX_CONF  = '/etc/nginx/conf.d/default.conf';
     const APACHE_CONF = '/usr/local/apache2/conf/extra/httpd-vhosts.conf';
@@ -17,7 +17,7 @@ class SwitchWebServerCommand extends ReplacementCommand
      */
     protected function configure()
     {
-        $options = implode(', ', self::getOptions());
+        $options = implode(', ', self::getChoices());
 
         $this
             ->setName('switch:webserver')
@@ -48,7 +48,7 @@ class SwitchWebServerCommand extends ReplacementCommand
      *
      * @return array
      */
-    public static function getOptions()
+    public static function getChoices()
     {
         return ['apache', 'nginx'];
     }

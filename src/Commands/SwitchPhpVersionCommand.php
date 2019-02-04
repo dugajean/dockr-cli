@@ -5,7 +5,7 @@ namespace Dockr\Commands;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 
-class SwitchPhpVersionCommand extends ReplacementCommand
+class SwitchPhpVersionCommand extends SwitchCommand
 {
     /**
      * Configure the command
@@ -14,7 +14,7 @@ class SwitchPhpVersionCommand extends ReplacementCommand
      */
     protected function configure()
     {
-        $options = implode(',', self::getOptions());
+        $options = implode(',', self::getChoices());
 
         $this
             ->setName('switch:php')
@@ -45,7 +45,7 @@ class SwitchPhpVersionCommand extends ReplacementCommand
      *
      * @return array
      */
-    public static function getOptions()
+    public static function getChoices()
     {
         return ['7.0', '7.1', '7.2', '7.3'];
     }

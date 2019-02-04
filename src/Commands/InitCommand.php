@@ -139,7 +139,7 @@ class InitCommand extends Command
     {
         $this->webServer = (new ChoiceQuestion(
             'Please select the webserver you want your project to run on',
-            SwitchWebServerCommand::getOptions(), 0
+            SwitchWebServerCommand::getChoices(), 0
         ))
             ->render()
             ->outputAnswer()
@@ -155,7 +155,7 @@ class InitCommand extends Command
     {
         $this->cacheStore = (new ChoiceQuestion(
             'Please select the cache store you want your project to run on',
-            SwitchCacheStoreCommand::getOptions(), 0
+            SwitchCacheStoreCommand::getChoices(), 0
         ))
             ->render()
             ->outputAnswer()
@@ -171,7 +171,7 @@ class InitCommand extends Command
     {
         $this->phpVersion = (new ChoiceQuestion(
             'Please select the PHP version you want your project to run on',
-            SwitchPhpVersionCommand::getOptions(), 2
+            SwitchPhpVersionCommand::getChoices(), 2
         ))
             ->render()
             ->outputAnswer()

@@ -5,7 +5,7 @@ namespace Dockr\Commands;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 
-class SwitchCacheStoreCommand extends ReplacementCommand
+class SwitchCacheStoreCommand extends SwitchCommand
 {
     /**
      * Configure the command
@@ -14,7 +14,7 @@ class SwitchCacheStoreCommand extends ReplacementCommand
      */
     protected function configure()
     {
-        $options = implode(', ', self::getOptions());
+        $options = implode(', ', self::getChoices());
 
         $this
             ->setName('switch:cache')
@@ -32,7 +32,7 @@ class SwitchCacheStoreCommand extends ReplacementCommand
      *
      * @return array
      */
-    public static function getOptions()
+    public static function getChoices()
     {
         return ['redis', 'memcached'];
     }
