@@ -63,17 +63,23 @@ class InitCommand extends Command
 
         $this->runWizard();
         $this->performReplacements();
-        $this->storeConfig();
+        $configStored = $this->storeConfig();
+
+        if ($configStored) {
+            $this->output->writeln(color('green', 'Successfully initialized Dockr for this directory!'));
+        } else {
+            $this->output->writeln(color('red', 'Something went wrong while initializing Dockr. Please try again'));
+        }
     }
 
     /**
      * Store JSON config file with all the data.
      *
-     * @return void
+     * @return bool
      */
     public function storeConfig()
     {
-        $this->config->set([
+        $set = $this->config->set([
             'project-name' => $this->projectName,
             'project-domain' => $this->projectDomain,
             'web-server' => $this->webServer,
@@ -82,7 +88,11 @@ class InitCommand extends Command
             'php-extensions' => $this->phpExtensions
         ]);
 
-        $this->output->writeln('Configuration file has been saved under dockr.json');
+        if ($set) {
+            $this->output->writeln('Configuration file has been saved under dockr.json');
+        }
+
+        return $set;
     }
 
     /**
@@ -210,6 +220,9 @@ class InitCommand extends Command
 
     /**
      * Prepare the stubs
+     *
+     * @return void
+     * @throws \Pouch\Exceptions\NotFoundException
      */
     protected function performReplacements()
     {
@@ -237,7 +250,7 @@ class InitCommand extends Command
      */
     public function replacementQuery($haystack)
     {
-        $vhost = constant(SwitchWebServerCommand::class.'::'.strtoupper($this->webServer).'_CONF');
+        $vhost = constant(SwitchWebServerCommand::class . '::' . strtoupper($this->webServer) . '_CONF');
         $rawPhp = str_replace('.', '', $this->phpVersion);
         $phpExts = implode(' ', $this->phpExtensions);
 
