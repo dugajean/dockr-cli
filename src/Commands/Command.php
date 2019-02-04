@@ -31,21 +31,6 @@ abstract class Command extends SymfonyCommand
     protected $config;
 
     /**
-     * @var string
-     */
-    protected $currentProp;
-
-    /**
-     * @var string
-     */
-    protected $newValue;
-
-    /**
-     * @var array
-     */
-    protected $replacements = [];
-
-    /**
      * User's answers
      */
     protected $projectName;
@@ -54,13 +39,6 @@ abstract class Command extends SymfonyCommand
     protected $cacheStore;
     protected $phpVersion;
     protected $phpExtensions = [];
-
-    /**
-     * Return options
-     *
-     * @return array
-     */
-    abstract public static function getOptions();
 
     /**
      * @param \Symfony\Component\Console\Input\InputInterface   $input
@@ -86,7 +64,6 @@ abstract class Command extends SymfonyCommand
         $this->input = $input;
         $this->output = $output;
         $this->questionHelper = $this->getHelper('question');
-        $this->currentProp = $this->getSwitchProperty();
 
         Question::setIO($input, $output, $this->questionHelper);
     }
@@ -106,90 +83,5 @@ abstract class Command extends SymfonyCommand
             $prop = camel_case($key);
             $this->{$prop} = $value;
         }
-    }
-
-    /**
-     * Initiates a basic replacement.
-     *
-     * @param \Closure|null $postValidation
-     *
-     * @throws \Pouch\Exceptions\NotFoundException
-     * @throws \Pouch\Exceptions\PouchException
-     */
-    protected function basicReplacement(\Closure $postValidation = null)
-    {
-        $newValue = $this->input->getArgument('new value');
-        $currentProp = snake_case($this->currentProp, ' ');
-
-        if (!in_array($newValue, static::getOptions())) {
-            throw new \RuntimeException("Invalid {$currentProp} inputted. Must be: " . implode(', ', static::getOptions()));
-        }
-
-        if ($newValue == $this->{$this->currentProp}) {
-            throw new \RuntimeException("The {$newValue} {$currentProp} is already in use");
-        }
-
-        // Call post validation hook
-        if ($postValidation !== null) {
-            $postValidation($newValue);
-        }
-
-        // Store new value
-        $this->newValue = $newValue;
-
-        // Perform replacements now
-        $this->performReplacements();
-
-        $prop = snake_case($this->currentProp, ' ');
-        $this->output->writeln(color('green', "Successfully changed the {$prop} value to {$newValue}"));
-    }
-
-    /**
-     * Replace the files
-     *
-     * @throws \Pouch\Exceptions\NotFoundException
-     * @throws \Pouch\Exceptions\PouchException
-     */
-    protected function performReplacements()
-    {
-        $finder = pouch()->get('docker_finder');
-
-        foreach ($finder as $file) {
-            $contents = $this->replacementQuery($file->getContents());
-            $fileName = current_path($file->getRelativePathname());
-            file_put_contents($fileName, $contents);
-        }
-
-        $this->config->set(snake_case($this->currentProp, '-'), $this->newValue);
-    }
-
-    /**
-     * Performs the actual string replacement for all files.
-     *
-     * @param $haystack
-     *
-     * @return string
-     */
-    public function replacementQuery($haystack)
-    {
-        $this->replacements[$this->{$this->currentProp}] = $this->newValue;
-
-        $searches = array_keys($this->replacements);
-        $replacements = array_values($this->replacements);
-
-        return str_replace($searches, $replacements, $haystack);
-    }
-
-    /**
-     * Returns the component making the calls.
-     *
-     * @return string
-     */
-    protected function getSwitchProperty()
-    {
-        $prop = str_replace('Switch', '', class_basename(static::class));
-        $prop = str_replace('Command', '', $prop);
-
-        return camel_case($prop);
     }
 }

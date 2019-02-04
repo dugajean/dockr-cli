@@ -253,14 +253,4 @@ class InitCommand extends Command
             $haystack
         );
     }
-
-    /**
-     * Return options
-     *
-     * @return array
-     */
-    public static function getOptions()
-    {
-        return [];
-    }
 }

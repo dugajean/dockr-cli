@@ -4,10 +4,8 @@ namespace Dockr\Commands;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
-class SwitchWebServerCommand extends Command
+class SwitchWebServerCommand extends ReplacementCommand
 {
     const NGINX_CONF  = '/etc/nginx/conf.d/default.conf';
     const APACHE_CONF = '/usr/local/apache2/conf/extra/httpd-vhosts.conf';
@@ -33,21 +31,16 @@ class SwitchWebServerCommand extends Command
     }
 
     /**
-     * @param \Symfony\Component\Console\Input\InputInterface   $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * Adds replacer for the vhost mounting point in docker-compose.yml
      *
-     * @return int|void|null
-     * @throws \Pouch\Exceptions\NotFoundException
-     * @throws \Pouch\Exceptions\PouchException
+     * @return void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function addReplacements()
     {
-        parent::execute($input, $output);
-        parent::basicReplacement(function ($newValue) {
-            $vhostOld = constant(self::class . '::' . strtoupper($this->webServer) . '_CONF');
-            $vhostNew = constant(self::class . '::' . strtoupper($newValue) . '_CONF');
-            $this->replacements[(string)$vhostOld] = (string)$vhostNew;
-        });
+        $vhostOld = constant(self::class . '::' . strtoupper($this->webServer) . '_CONF');
+        $vhostNew = constant(self::class . '::' . strtoupper($this->newValue) . '_CONF');
+
+        $this->setReplacement($vhostOld, $vhostNew);
     }
 
     /**

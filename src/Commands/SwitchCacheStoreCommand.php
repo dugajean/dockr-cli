@@ -4,10 +4,8 @@ namespace Dockr\Commands;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
-class SwitchCacheStoreCommand extends Command
+class SwitchCacheStoreCommand extends ReplacementCommand
 {
     /**
      * Configure the command
@@ -27,20 +25,6 @@ class SwitchCacheStoreCommand extends Command
                     new InputArgument('new value', InputArgument::REQUIRED, 'The new cache store you want to set'),
                 ])
             );
-    }
-
-    /**
-     * @param \Symfony\Component\Console\Input\InputInterface   $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return int|void|null
-     * @throws \Pouch\Exceptions\NotFoundException
-     * @throws \Pouch\Exceptions\PouchException
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        parent::execute($input, $output);
-        parent::basicReplacement();
     }
 
     /**

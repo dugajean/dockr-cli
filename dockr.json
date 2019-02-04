@@ -1,9 +1,9 @@
 {
     "project-name": "test",
     "project-domain": "test.local",
-    "web-server": "nginx",
+    "web-server": "apache",
     "cache-store": "memcached",
-    "php-version": "7.1",
+    "php-version": "7.2",
     "php-extensions": [
         "php7.2-mysql",
         "php7.2-pgsql",
