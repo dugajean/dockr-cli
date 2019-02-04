@@ -52,7 +52,7 @@ abstract class SwitchCommand extends Command
         $this->performReplacements();
 
         $prop = snake_case($this->currentProp, ' ');
-        $this->output->writeln(color('green', "Successfully changed the {$prop} to {$this->newValue}"));
+        $this->output->writeln(color('green', "Successfully changed the {$prop} to {$this->newValue}."));
     }
 
     /**
@@ -69,7 +69,7 @@ abstract class SwitchCommand extends Command
         }
 
         if ($this->newValue == $this->{$this->currentProp}) {
-            throw new \RuntimeException("The {$this->newValue} {$currentProp} is already in use");
+            throw new \RuntimeException("The {$this->newValue} {$currentProp} is already in use. Please try a different value.");
         }
 
         return $this;

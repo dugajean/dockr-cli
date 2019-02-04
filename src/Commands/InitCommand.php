@@ -68,7 +68,7 @@ class InitCommand extends Command
         if ($configStored) {
             $this->output->writeln(color('green', 'Successfully initialized Dockr for this directory!'));
         } else {
-            $this->output->writeln(color('red', 'Something went wrong while initializing Dockr. Please try again'));
+            $this->output->writeln(color('red', 'Something went wrong while initializing Dockr. Please try again.'));
         }
     }
 
@@ -89,7 +89,7 @@ class InitCommand extends Command
         ]);
 
         if ($set) {
-            $this->output->writeln('Configuration file has been saved under dockr.json');
+            $this->output->writeln('Configuration file has been saved under dockr.json.');
         }
 
         return $set;
@@ -148,7 +148,7 @@ class InitCommand extends Command
     protected function askWebServer()
     {
         $this->webServer = (new ChoiceQuestion(
-            'Please select the webserver you want your project to run on',
+            'Please select the webserver you want your project to run on: ',
             SwitchWebServerCommand::getChoices(), 0
         ))
             ->render()
@@ -164,7 +164,7 @@ class InitCommand extends Command
     protected function askCacheStore()
     {
         $this->cacheStore = (new ChoiceQuestion(
-            'Please select the cache store you want your project to run on',
+            'Please select the cache store you want your project to run on: ',
             SwitchCacheStoreCommand::getChoices(), 0
         ))
             ->render()
