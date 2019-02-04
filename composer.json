@@ -1,5 +1,18 @@
 {
+    "name": "dugajean/dockr-cli",
+    "type": "library",
+    "description": "Easy Docker Compose setup for your LAMP and LEMP projects.",
+    "keywords": ["docker", "container", "dockr", "docker-compose", "cli"],
+    "homepage": "http://dukagj.in",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dukagjin Surdulli",
+            "email": "me@dukagj.in"
+        }
+    ],
     "require": {
+        "php": "^7",
         "ext-json": "*",
         "ext-ctype": "*",
         "symfony/console": "^4.2",
@@ -14,5 +27,10 @@
             "src/Helpers/utils.php",
             "config/pouch.php"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dockr\\Tests": "tests/"
+        }
     }
 }

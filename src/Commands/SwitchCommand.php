@@ -45,7 +45,7 @@ abstract class SwitchCommand extends Command
         $this->newValue = $this->input->getArgument('new value');
 
         if (method_exists($this, 'addReplacements')) {
-            $this->addReplacements();
+            $this->addReplacements($this->newValue);
         }
 
         $this->validate();
@@ -106,13 +106,16 @@ abstract class SwitchCommand extends Command
             file_put_contents($fileName, $contents);
         }
 
+        var_dump($this->currentProp);
         $this->config->set(snake_case($this->currentProp, '-'), $this->newValue);
+
+        return $this;
     }
 
     /**
      * Performs the actual string replacement for all files.
      *
-     * @param $haystack
+     * @param string $haystack
      *
      * @return string
      */

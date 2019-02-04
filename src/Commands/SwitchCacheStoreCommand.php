@@ -14,11 +14,11 @@ class SwitchCacheStoreCommand extends SwitchCommand
      */
     protected function configure()
     {
-        $options = implode(', ', self::getChoices());
+        $options = comma_list(self::getChoices());
 
         $this
             ->setName('switch:cache')
-            ->setDescription('Switch the cache store for your project.')
+            ->setDescription('Switch the cache store for your project')
             ->setHelp("Switches the cache store of a project previously setup with Dockr. Allowed values are: {$options}")
             ->setDefinition(
                 new InputDefinition([

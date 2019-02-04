@@ -20,7 +20,7 @@ class ExtensionDisableCommand extends Command
      */
     protected function configure()
     {
-        $this->setDescription('Disable one or more PHP modules.')
+        $this->setDescription('Disable one or more PHP modules')
             ->setHelp('Provide a comma separated list of PHP modules that you want to disable. Use --list to see all available options.');
     }
 

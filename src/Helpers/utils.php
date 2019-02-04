@@ -65,6 +65,14 @@ function class_basename($class)
     return basename(str_replace('\\', '/', $class));
 }
 
+/**
+ * Make a string colorful for CLI output.
+ *
+ * @param string $mode
+ * @param string $str
+ *
+ * @return string
+ */
 function color($mode, $str)
 {
     switch ($mode)
@@ -86,4 +94,16 @@ function color($mode, $str)
     }
 
     return "<{$tag}>{$str}</{$tag}>";
+}
+
+/**
+ * Join array with a comma-space.
+ *
+ * @param array $array
+ *
+ * @return string
+ */
+function comma_list(array $array)
+{
+    return implode(', ', $array);
 }

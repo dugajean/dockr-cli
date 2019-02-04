@@ -70,7 +70,7 @@ class ExtensionEnableCommand extends Command
     {
         $this
             ->setName('ext:enable')
-            ->setDescription('Enable one or more PHP modules.')
+            ->setDescription('Enable one or more PHP modules')
             ->setHelp('Provide a comma separated list of PHP modules that you want to enable. Use --list to see all available options.')
             ->setDefinition(
                 new InputDefinition([

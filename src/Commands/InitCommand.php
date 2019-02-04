@@ -15,38 +15,13 @@ class InitCommand extends Command
     protected static $defaultName = 'init';
 
     /**
-     * @var InputInterface
-     */
-    protected $input;
-
-    /**
-     * @var OutputInterface
-     */
-    protected $output;
-
-    /**
-     * @var \Symfony\Component\Console\Helper\QuestionHelper
-     */
-    protected $questionHelper;
-
-    /**
-     * User's answers
-     */
-    protected $projectName;
-    protected $projectDomain;
-    protected $webServer;
-    protected $cacheStore;
-    protected $phpVersion;
-    protected $phpExtensions = [];
-
-    /**
      * Configure the command
      *
      * @return void
      */
     protected function configure()
     {
-        $this->setDescription('Initialize docker-compose.')
+        $this->setDescription('Initialize docker-compose')
             ->setHelp('Start an initialization wizard to setup docker-compose for your project.');
     }
 
@@ -231,7 +206,7 @@ class InitCommand extends Command
         foreach ($finder as $file) {
             $folderStructure = current_path($file->getRelativePath());
 
-            if (! file_exists($folderStructure)) {
+            if (!file_exists($folderStructure)) {
                 mkdir($folderStructure, 0777, true);
             }
 
