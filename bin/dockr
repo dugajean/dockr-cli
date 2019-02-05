@@ -3,10 +3,18 @@
 
 require __DIR__.'/../vendor/autoload.php';
 
+use Dockr\Config;
 use Dockr\Commands;
 use Symfony\Component\Console\Application;
 
 $application = new Application('Dockr CLI', '@package_version@');
+
+$config = pouch()->get(Config::class);
+if ($commands = $config->get('alias-commands')) {
+    foreach ($commands as $alias => $commandList) {
+        $application->add((new Commands\AliasCommand($alias, $commandList))->getClass());
+    }
+}
 
 $application->add(new Commands\InitCommand);
 $application->add(new Commands\SwitchWebServerCommand);

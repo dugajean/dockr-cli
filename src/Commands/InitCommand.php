@@ -60,7 +60,11 @@ class InitCommand extends Command
             'web-server' => $this->webServer,
             'cache-store' => $this->cacheStore,
             'php-version' => $this->phpVersion,
-            'php-extensions' => $this->phpExtensions
+            'alias-commands' => [
+                'run' => [
+                    'docker-compose up -d'
+                ]
+            ]
         ]);
 
         if ($set) {
