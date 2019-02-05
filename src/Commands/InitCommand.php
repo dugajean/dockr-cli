@@ -170,26 +170,65 @@ class InitCommand extends Command
      */
     protected function askPhpExtensions()
     {
+        $phpExts = [
+            'memcached' => 'php-memcached',
+            'mysql' => 'php{PHP_VERSION}-mysql',
+            'pgsql' => 'php{PHP_VERSION}-pgsql',
+            'redis' => 'php-redis',
+            'xdebug' => 'php-xdebug',
+            'sqlite' => 'php{PHP_VERSION}-sqlite3',
+            'bcmath' => 'php{PHP_VERSION}-bcmath',
+            'bz' => 'php{PHP_VERSION}-bz2',
+            'dba' => 'php{PHP_VERSION}-dba',
+            'enchant' => 'php{PHP_VERSION}-enchant',
+            'gd' => 'php{PHP_VERSION}-gd',
+            'gearman' => 'php-gearman',
+            'gmp' => 'php{PHP_VERSION}-gmp',
+            'igbinary' => 'php-igbinary',
+            'imagick' => 'php-imagick',
+            'imap' => 'php{PHP_VERSION}-imap',
+            'interbase' => 'php{PHP_VERSION}-interbase',
+            'intl' => 'php{PHP_VERSION}-intl',
+            'ldap' => 'php{PHP_VERSION}-ldap',
+            'mongodb' => 'php-mongodb',
+            'msgpack' => 'php-msgpack',
+            'odbc' => 'php{PHP_VERSION}-odbc',
+            'phpdbg' => 'php{PHP_VERSION}-phpdbg',
+            'pspell' => 'php{PHP_VERSION}-pspell',
+            'raphf' => 'php-raphf',
+            'recode' => 'php{PHP_VERSION}-recode',
+            'snmp' => 'php{PHP_VERSION}-snmp',
+            'soap' => 'php{PHP_VERSION}-soap',
+            'ssh' => 'php-ssh2',
+            'sybase' => 'php{PHP_VERSION}-sybase',
+            'tideways' => 'php-tideways',
+            'tidy' => 'php{PHP_VERSION}-tidy',
+            'xmlrpc' => 'php{PHP_VERSION}-xmlrpc',
+            'xsl' => 'php{PHP_VERSION}-xsl',
+            'yaml' => 'php-yaml',
+            'zmq' => 'php-zmq',
+        ];
+
         $question = (new ChoiceQuestion(
             'Please choose which PHP extensions should be included in your project (comma separated list): ',
-            array_keys(ExtensionEnableCommand::$availableExtensions), null, true
+            array_keys($phpExts), null, true
         ))->render();
 
-        $question->adjustAnswer(function ($choices) {
+        $question->adjustAnswer(function ($choices) use ($phpExts) {
             $resultArray = [];
             foreach ($choices as $extensionName) {
-                $actualExtensionName = ExtensionEnableCommand::$availableExtensions[$extensionName];
+                $actualExtensionName = $phpExts[$extensionName];
                 if (strpos($actualExtensionName, '{PHP_VERSION}') !== false) {
                     $actualExtensionName = str_replace('{PHP_VERSION}', $this->phpVersion, $actualExtensionName);
                 }
-                ExtensionEnableCommand::$availableExtensions[$extensionName] = $actualExtensionName;
+                $phpExts[$extensionName] = $actualExtensionName;
                 $resultArray[] = $extensionName;
             }
             return array_unique($resultArray);
         })->outputAnswer();
 
-        $this->phpExtensions = array_map(function($item) {
-            return ExtensionEnableCommand::$availableExtensions[$item];
+        $this->phpExtensions = array_map(function($item) use ($phpExts) {
+            return $phpExts[$item];
         }, $question->getAnswer());
     }
 

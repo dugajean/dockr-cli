@@ -22,7 +22,7 @@ class SwitchCacheStoreCommand extends SwitchCommand
             ->setHelp("Switches the cache store of a project previously setup with Dockr. Allowed values are: {$options}")
             ->setDefinition(
                 new InputDefinition([
-                    new InputArgument('new value', InputArgument::REQUIRED, 'The new cache store you want to set'),
+                    new InputArgument($this->getArgument(), InputArgument::REQUIRED, 'The new cache store you want to set'),
                 ])
             );
     }

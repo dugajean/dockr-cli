@@ -79,6 +79,10 @@ abstract class Command extends SymfonyCommand
         $this->config = pouch()->resolve(Config::class);
         $configData = $this->config->get();
 
+        if ($configData === null) {
+            return;
+        }
+
         foreach ($configData as $key => $value) {
             $prop = camel_case($key);
             $this->{$prop} = $value;

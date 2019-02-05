@@ -25,7 +25,7 @@ class SwitchWebServerCommand extends SwitchCommand
             ->setHelp("Switches the webserver of a project previously setup with Dockr. Allowed values are: {$options}")
             ->setDefinition(
                 new InputDefinition([
-                    new InputArgument('new value', InputArgument::REQUIRED, 'The new webserver you want to set'),
+                    new InputArgument($this->getArgument(), InputArgument::REQUIRED, 'The new webserver you want to set'),
                 ])
             );
     }

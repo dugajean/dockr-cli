@@ -2,17 +2,22 @@
 
 namespace Dockr;
 
-class Config
+final class Config
 {
     /**
      * @var array
      */
-    protected $data;
+    private $data;
 
     /**
      * Config's file name.
      */
     const FILE = './dockr.json';
+
+    /**
+     * @var string
+     */
+    private $jsonArray;
 
     /**
      * Required config structure.
@@ -50,10 +55,10 @@ class Config
             }
 
         } elseif ($this->data) {
-            $this->data[$dataOrKey] = (string)$value;
+            $this->data[$dataOrKey] = $this->prepareValue($value);
         }
 
-        return (bool)file_put_contents(self::FILE, json_encode($this->data, JSON_PRETTY_PRINT));
+        return (bool)file_put_contents(self::FILE, $this->makeJson());
     }
 
     /**
@@ -65,8 +70,8 @@ class Config
      */
     public function get($key = null)
     {
-        if (!$this->data) {
-            throw new \RuntimeException('Config file does not exist or ist empty.');
+        if (!$this->exists()) {
+            return null;
         }
 
         if ($key === null) {
@@ -74,6 +79,16 @@ class Config
         }
 
         return array_key_exists($key, $this->data) ? $this->data[$key] : null;
+    }
+
+    /**
+     * Returns true if the config data exists, false otherwise.
+     *
+     * @return bool
+     */
+    public function exists()
+    {
+        return $this->data && count($this->data) > 0;
     }
 
     /**
@@ -86,5 +101,35 @@ class Config
     public function validate(array $data)
     {
         return array_keys($data) == self::STRUCTURE;
+    }
+
+    /**
+     * Prepares the value for storing.
+     *
+     * @param $value
+     *
+     * @return string
+     */
+    private function prepareValue($value)
+    {
+        $this->jsonArray = str_replace("\n", "\n\t", json_encode($value, JSON_PRETTY_PRINT));
+
+        return is_array($value) ? '{ARRAY_PLACEHOLDER}' : $value;
+    }
+
+    /**
+     * Prepares the JSON for saving.
+     *
+     * @return false|mixed|string
+     */
+    public function makeJson()
+    {
+        $json = json_encode($this->data, JSON_PRETTY_PRINT);
+
+        if (strpos($json, '{ARRAY_PLACEHOLDER}') !== false) {
+            $json = str_replace('"{ARRAY_PLACEHOLDER}"', $this->jsonArray, $json);
+        }
+
+        return $json;
     }
 }

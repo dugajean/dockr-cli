@@ -22,7 +22,7 @@ class SwitchPhpVersionCommand extends SwitchCommand
             ->setHelp("Switches the PHP version of a project previously setup with Dockr. Allowed values are: {$options}")
             ->setDefinition(
                 new InputDefinition([
-                    new InputArgument('new value', InputArgument::REQUIRED, 'The new PHP version you want to set'),
+                    new InputArgument($this->getArgument(), InputArgument::REQUIRED, 'The new PHP version you want to set'),
                 ])
             );
     }
