@@ -23,6 +23,11 @@ abstract class SwitchCommand extends Command
     protected $replacements = [];
 
     /**
+     * @var string
+     */
+    protected $argument = 'new value';
+
+    /**
      * Return options
      *
      * @return array
@@ -42,7 +47,7 @@ abstract class SwitchCommand extends Command
         parent::execute($input, $output);
 
         $this->currentProp = $this->getSwitchProperty();
-        $this->newValue = $this->input->getArgument('new value');
+        $this->newValue = $this->input->getArgument($this->getArgument());
 
         if (method_exists($this, 'addReplacements')) {
             $this->addReplacements($this->newValue);
@@ -140,5 +145,15 @@ abstract class SwitchCommand extends Command
         $prop = str_replace('Command', '', $prop);
 
         return camel_case($prop);
+    }
+
+    /**
+     * Returns current argument.
+     *
+     * @return string
+     */
+    public function getArgument()
+    {
+        return $this->argument;
     }
 }
