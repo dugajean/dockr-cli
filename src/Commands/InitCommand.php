@@ -61,15 +61,11 @@ class InitCommand extends Command
             'cache-store' => $this->cacheStore,
             'php-version' => $this->phpVersion,
             'alias-commands' => [
-                'run' => [
+                'up' => [
                     'docker-compose up -d'
                 ]
             ]
         ]);
-
-        if ($set) {
-            $this->output->writeln('Configuration file has been saved under dockr.json.');
-        }
 
         return $set;
     }
