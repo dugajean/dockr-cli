@@ -3,6 +3,7 @@
 namespace Dockr\Commands;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -14,7 +15,7 @@ final class AliasCommand
     private $name;
 
     /**
-     * @var array
+     * @var \stdClass
      */
     private $commands;
 
@@ -27,7 +28,7 @@ final class AliasCommand
     public function __construct($name, array $commands)
     {
         $this->name = $name;
-        $this->commands = $commands;
+        $this->commands = $this->prepareCommands($commands);
     }
 
     /**
@@ -43,11 +44,29 @@ final class AliasCommand
     /**
      * Commands getter.
      *
-     * @return array
+     * @return \stdClass
      */
     public function getCommands()
     {
         return $this->commands;
+    }
+
+    /**
+     * Prepares the commands and their arguments.
+     *
+     * @param array $commands
+     *
+     * @return array
+     */
+    private function prepareCommands(array $commands)
+    {
+        return array_map(function ($item) {
+            $object = new \stdClass;
+            $object->body = $item;
+            preg_match_all('~\{([^}]*)\}~', $item, $matches);
+            $object->arguments = $matches[1];
+            return $object;
+        }, $commands);
     }
 
     /**
@@ -78,15 +97,29 @@ final class AliasCommand
             }
 
             /**
-             * @param \Symfony\Component\Console\Input\InputInterface   $input
-             * @param \Symfony\Component\Console\Output\OutputInterface $output
-             *
-             * @return int|void|null
+             * @inheritdoc
+             */
+            protected function configure()
+            {
+                foreach ($this->alias->getCommands() as $command) {
+                    foreach ($command->arguments as $argument) {
+                        $this->addArgument($argument, InputArgument::REQUIRED);
+                    }
+                }
+            }
+
+            /**
+             * @inheritdoc
              */
             protected function execute(InputInterface $input, OutputInterface $output)
             {
                 foreach ($this->alias->getCommands() as $command) {
-                    $output->writeln(shell_exec($command));
+                    $commandStr = $command->body;
+                    foreach ($command->arguments as $argument) {
+                        $commandStr = str_replace("{{$argument}}", $input->getArgument($argument), $commandStr);
+                    }
+
+                    $output->writeln(shell_exec($commandStr));
                 }
             }
         };
