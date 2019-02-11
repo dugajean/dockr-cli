@@ -27,8 +27,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Dockr\\": "src/",
-            "Dockr\\Foo\\": "foo/"
+            "Dockr\\": "src/"
         },
         "files": [
             "src/Helpers/utils.php",
