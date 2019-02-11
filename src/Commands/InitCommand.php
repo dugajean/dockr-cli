@@ -21,7 +21,8 @@ class InitCommand extends Command
      */
     protected function configure()
     {
-        $this->setDescription('Initialize docker-compose')
+        $this
+            ->setDescription('Initialize docker-compose')
             ->setHelp('Start an initialization wizard to setup docker-compose for your project.');
     }
 
@@ -45,29 +46,6 @@ class InitCommand extends Command
         } else {
             $this->output->writeln(color('red', 'Something went wrong while initializing Dockr. Please try again.'));
         }
-    }
-
-    /**
-     * Store JSON config file with all the data.
-     *
-     * @return bool
-     */
-    public function storeConfig()
-    {
-        $set = $this->config->set([
-            'project-name' => $this->projectName,
-            'project-domain' => $this->projectDomain,
-            'web-server' => $this->webServer,
-            'cache-store' => $this->cacheStore,
-            'php-version' => $this->phpVersion,
-            'alias-commands' => [
-                'up' => [
-                    'docker-compose up -d'
-                ]
-            ]
-        ]);
-
-        return $set;
     }
 
     /**
@@ -106,7 +84,7 @@ class InitCommand extends Command
      */
     protected function askProjectDomain()
     {
-        $defaultDomain = str_replace(' ', '-', strtolower($this->projectName)).'.';
+        $defaultDomain = str_replace(' ', '-', strtolower($this->projectName)) . '.';
 
         $this->projectDomain = (new Question('Please enter the domain for the project: ', $defaultDomain . 'local'))
             ->setAutocomplete([$defaultDomain])
@@ -237,20 +215,21 @@ class InitCommand extends Command
      *
      * @return void
      * @throws \Pouch\Exceptions\NotFoundException
+     * @throws \Pouch\Exceptions\PouchException
      */
     protected function performReplacements()
     {
-        $finder = pouch()->resolve('stubs_finder');
+        $finder = pouch()->get('stubs_finder');
 
         foreach ($finder as $file) {
-            $folderStructure = current_path($file->getRelativePath());
+            $folderStructure = $this->currentPath($file->getRelativePath());
 
             if (!file_exists($folderStructure)) {
                 mkdir($folderStructure, 0777, true);
             }
 
             $contents = $this->replacementQuery($file->getContents());
-            $fileName = current_path(str_replace('.stub', '', $file->getRelativePathname()));
+            $fileName = $this->currentPath(str_replace('.stub', '', $file->getRelativePathname()));
             file_put_contents($fileName, $contents);
         }
     }
@@ -262,7 +241,7 @@ class InitCommand extends Command
      *
      * @return string
      */
-    public function replacementQuery($haystack)
+    protected function replacementQuery($haystack)
     {
         $vhost = constant(SwitchWebServerCommand::class . '::' . strtoupper($this->webServer) . '_CONF');
         $rawPhp = str_replace('.', '', $this->phpVersion);
@@ -279,5 +258,28 @@ class InitCommand extends Command
             ],
             $haystack
         );
+    }
+
+    /**
+     * Store JSON config file with all the data.
+     *
+     * @return bool
+     */
+    protected function storeConfig()
+    {
+        $set = $this->config->set([
+            'project-name' => $this->projectName,
+            'project-domain' => $this->projectDomain,
+            'web-server' => $this->webServer,
+            'cache-store' => $this->cacheStore,
+            'php-version' => $this->phpVersion,
+            'alias-commands' => [
+                'up' => [
+                    'docker-compose up -d'
+                ]
+            ]
+        ]);
+
+        return $set;
     }
 }

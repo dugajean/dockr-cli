@@ -3,6 +3,7 @@
 use Pouch\Pouch;
 use Dockr\Config;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Console\Output\OutputInterface;
 
 $rootPath = __DIR__ . '/../';
 
@@ -22,6 +23,9 @@ pouch()->bind([
         }
 
         return $finder;
+    }),
+    OutputInterface::class => pouch()->factory(function () {
+        return new Symfony\Component\Console\Output\ConsoleOutput;
     }),
     Config::class => function () {
         return new Config;

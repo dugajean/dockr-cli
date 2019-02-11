@@ -49,8 +49,9 @@ abstract class Command extends SymfonyCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->loadConfig();
         $this->setIO($input, $output);
+
+        $this->loadConfig();
     }
 
     /**
@@ -76,7 +77,7 @@ abstract class Command extends SymfonyCommand
      */
     protected function loadConfig()
     {
-        $this->config = pouch()->resolve(Config::class);
+        $this->config = pouch()->get(Config::class);
         $configData = $this->config->get();
 
         if ($configData === null) {
@@ -87,5 +88,17 @@ abstract class Command extends SymfonyCommand
             $prop = camel_case($key);
             $this->{$prop} = $value;
         }
+    }
+
+    /**
+     * Prepends ./ to a path.
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    public function currentPath($path)
+    {
+        return './' . $path;
     }
 }

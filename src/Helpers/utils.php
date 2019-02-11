@@ -1,18 +1,6 @@
 <?php
 
 /**
- * Prepends ./ to a path.
- *
- * @param string $path
- *
- * @return string
- */
-function current_path($path)
-{
-    return './' . $path;
-}
-
-/**
  * Convert case to studly.
  *
  * @param string $str
@@ -70,11 +58,17 @@ function class_basename($class)
  *
  * @param string $mode
  * @param string $str
+ * @param bool   $padded
  *
  * @return string
  */
-function color($mode, $str)
+function color($mode, $str, $padded = false)
 {
+    if ($padded) {
+        $padding = str_repeat(' ', strlen($str) + 4);
+        $str = "{$padding}\n  {$str}  \n{$padding}";
+    }
+
     switch ($mode)
     {
         case 'green':

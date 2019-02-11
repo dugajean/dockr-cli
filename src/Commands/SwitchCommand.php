@@ -107,7 +107,7 @@ abstract class SwitchCommand extends Command
 
         foreach ($finder as $file) {
             $contents = $this->replacementQuery($file->getContents());
-            $fileName = current_path($file->getRelativePathname());
+            $fileName = $this->currentPath($file->getRelativePathname());
             file_put_contents($fileName, $contents);
         }
 

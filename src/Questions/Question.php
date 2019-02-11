@@ -138,6 +138,10 @@ class Question implements QuestionInterface
      */
     protected function storeAnswer(SymfonyQuestion $question)
     {
+        if (method_exists($question, 'isMultiselect') && $question->isMultiselect()) {
+            exit(var_dump(self::$input));
+        }
+
         return self::$questionHelper->ask(self::$input, self::$output, $question);
     }
 

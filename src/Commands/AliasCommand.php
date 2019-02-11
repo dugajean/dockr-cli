@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class AliasCommand
+class AliasCommand
 {
     /**
      * @var string
@@ -15,20 +15,29 @@ final class AliasCommand
     private $name;
 
     /**
-     * @var \stdClass
+     * @var \stdClass|Command
      */
-    private $commands;
+    private $command;
+
+    /**
+     * @var OutputInterface
+     */
+    private $output;
 
     /**
      * AliasParser constructor.
      *
-     * @param string $name
-     * @param array  $commands
+     * @param string       $name
+     * @param array|string $command
+     *
+     * @throws \Pouch\Exceptions\NotFoundException
+     * @throws \Pouch\Exceptions\PouchException
      */
-    public function __construct($name, array $commands)
+    public function __construct($name, $command)
     {
         $this->name = $name;
-        $this->commands = $this->prepareCommands($commands);
+        $this->output = pouch()->get(OutputInterface::class);
+        $this->command = $this->prepareCommand($command);
     }
 
     /**
@@ -46,37 +55,47 @@ final class AliasCommand
      *
      * @return \stdClass
      */
-    public function getCommands()
+    public function getCommand()
     {
-        return $this->commands;
+        return $this->command;
     }
 
     /**
-     * Prepares the commands and their arguments.
+     * Prepares the command and their arguments.
      *
-     * @param array $commands
+     * @param array|string $command
      *
-     * @return array
+     * @return mixed
      */
-    private function prepareCommands(array $commands)
+    private function prepareCommand($command)
     {
-        return array_map(function ($item) {
-            $object = new \stdClass;
-            $object->body = $item;
-            preg_match_all('~\{([^}]*)\}~', $item, $matches);
-            $object->arguments = $matches[1];
-            return $object;
-        }, $commands);
+        if (is_array($command)) {
+            $parsedCommand = array_map(function ($item) {
+                $object = new \stdClass;
+                $object->body = $item;
+                preg_match_all('~\{([^}]*)\}~', $item, $matches);
+                $object->arguments = $matches[1];
+                return $object;
+            }, $command);
+        } elseif (class_exists($command) && is_subclass_of($command, Command::class)) {
+            $parsedCommand = new $command($this->getName());
+        } else {
+            exit($this->output->writeln(
+                color('red', "Invalid dockr.json command alias detected. Please check '{$this->getName()}' and try again.", true)
+            ));
+        }
+
+        return $parsedCommand;
     }
 
     /**
      * Returns an child-command instance.
      *
-     * @return \Symfony\Component\Console\Command\Command
+     * @return \stdClass|\Symfony\Component\Console\Command\Command
      */
     public function getClass()
     {
-        return new class ($this) extends Command
+        return $this->getCommand() instanceof Command ? $this->getCommand() : new class ($this) extends Command
         {
             /**
              * @var \Dockr\Commands\AliasCommand
@@ -101,7 +120,7 @@ final class AliasCommand
              */
             protected function configure()
             {
-                foreach ($this->alias->getCommands() as $command) {
+                foreach ($this->alias->getCommand() as $command) {
                     foreach ($command->arguments as $argument) {
                         $this->addArgument($argument, InputArgument::REQUIRED);
                     }
@@ -113,7 +132,7 @@ final class AliasCommand
              */
             protected function execute(InputInterface $input, OutputInterface $output)
             {
-                foreach ($this->alias->getCommands() as $command) {
+                foreach ($this->alias->getCommand() as $command) {
                     $commandStr = $command->body;
                     foreach ($command->arguments as $argument) {
                         $commandStr = str_replace("{{$argument}}", $input->getArgument($argument), $commandStr);
