@@ -204,7 +204,7 @@ class Question implements QuestionInterface
 
         $validatorNamespace = str_replace('ValidatorInterface', '', ValidatorInterface::class);
         foreach ($this->validators as $validator) {
-            $validatorClass = $validatorNamespace.'Validate'.ucwords(str_replace(['-', '_'], '', $validator));
+            $validatorClass = $validatorNamespace . 'Validate' . studly_case($validator);
 
             if (class_exists($validatorClass)) {
                 $question->setValidator(new $validatorClass());

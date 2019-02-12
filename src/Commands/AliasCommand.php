@@ -9,6 +9,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AliasCommand
 {
+    const TYPE_SHELL = 'shell';
+    const TYPE_CLASS = 'class';
+
     /**
      * @var string
      */
@@ -18,6 +21,11 @@ class AliasCommand
      * @var \stdClass|Command
      */
     private $command;
+
+    /**
+     * @var string
+     */
+    private $type;
 
     /**
      * @var OutputInterface
@@ -77,8 +85,11 @@ class AliasCommand
                 $object->arguments = $matches[1];
                 return $object;
             }, $command);
+
+            $this->type = self::TYPE_SHELL;
         } elseif (class_exists($command) && is_subclass_of($command, Command::class)) {
             $parsedCommand = new $command($this->getName());
+            $this->type = self::TYPE_CLASS;
         } else {
             exit($this->output->writeln(
                 color('red', "Invalid dockr.json command alias detected. Please check '{$this->getName()}' and try again.", true)
@@ -95,7 +106,7 @@ class AliasCommand
      */
     public function getClass()
     {
-        return $this->getCommand() instanceof Command ? $this->getCommand() : new class ($this) extends Command
+        return $this->type == self::TYPE_CLASS ? $this->getCommand() : new class ($this) extends Command
         {
             /**
              * @var \Dockr\Commands\AliasCommand
