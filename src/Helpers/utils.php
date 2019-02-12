@@ -42,6 +42,18 @@ function snake_case($str, $delimiter = '_')
 }
 
 /**
+ * Prepends ./ to a path.
+ *
+ * @param string $path
+ *
+ * @return string
+ */
+function current_path($path)
+{
+    return './' . $path;
+}
+
+/**
  * Get the class "basename" of the given object / class.
  *
  * @param  string|object  $class
@@ -100,4 +112,24 @@ function color($mode, $str, $padded = false)
 function comma_list(array $array)
 {
     return implode(', ', $array);
+}
+
+/**
+ * Determine if a given string starts with a given substring.
+ *
+ * @param  string        $haystack
+ * @param  string|array  $needles
+ *
+ * @return bool
+ */
+function starts_with($haystack, $needles)
+{
+    foreach ((array) $needles as $needle)
+    {
+        if ($needle != '' && strpos($haystack, $needle) === 0) {
+            return true;
+        }
+    }
+
+    return false;
 }

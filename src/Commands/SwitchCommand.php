@@ -35,8 +35,8 @@ abstract class SwitchCommand extends Command
     abstract public static function getChoices();
 
     /**
-     * @param \Symfony\Component\Console\Input\InputInterface   $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param InputInterface   $input
+     * @param OutputInterface  $output
      *
      * @return int|void|null
      * @throws \Pouch\Exceptions\NotFoundException
@@ -73,7 +73,7 @@ abstract class SwitchCommand extends Command
             throw new \RuntimeException("Invalid {$currentProp} inputted. Must be: " . implode(', ', static::getChoices()));
         }
 
-        if ($this->newValue == $this->{$this->currentProp}) {
+        if ($this->newValue == $this->answers[$this->currentProp]) {
             throw new \RuntimeException("The {$this->newValue} {$currentProp} is already in use. Please try a different value.");
         }
 
@@ -107,11 +107,10 @@ abstract class SwitchCommand extends Command
 
         foreach ($finder as $file) {
             $contents = $this->replacementQuery($file->getContents());
-            $fileName = $this->currentPath($file->getRelativePathname());
+            $fileName = current_path($file->getRelativePathname());
             file_put_contents($fileName, $contents);
         }
 
-        var_dump($this->currentProp);
         $this->config->set(snake_case($this->currentProp, '-'), $this->newValue);
 
         return $this;
@@ -126,7 +125,7 @@ abstract class SwitchCommand extends Command
      */
     protected function replacementQuery($haystack)
     {
-        $this->replacements[$this->{$this->currentProp}] = $this->newValue;
+        $this->replacements[$this->answers[$this->currentProp]] = $this->newValue;
 
         $searches = array_keys($this->replacements);
         $replacements = array_values($this->replacements);

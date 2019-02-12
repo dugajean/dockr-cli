@@ -6,19 +6,30 @@ require __DIR__.'/../vendor/autoload.php';
 use Dockr\Config;
 use Dockr\Commands;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\CommandLoader\FactoryCommandLoader;
+
+$config = pouch()->get(Config::class);
 
 $application = new Application('Dockr CLI', '@package_version@');
 
-$config = pouch()->get(Config::class);
-if ($commands = $config->get('alias-commands')) {
-    foreach ($commands as $alias => $commandList) {
-        $application->add((new Commands\AliasCommand($alias, $commandList))->getClass());
-    }
+try {
+    $application->add(new Commands\InitCommand);
+    $application->add(new Commands\SwitchWebServerCommand);
+    $application->add(new Commands\SwitchPhpVersionCommand);
+    $application->add(new Commands\SwitchCacheStoreCommand);
+} catch (\Exception $e) {
+
 }
 
-$application->add(new Commands\InitCommand);
-$application->add(new Commands\SwitchWebServerCommand);
-$application->add(new Commands\SwitchCacheStoreCommand);
-$application->add(new Commands\SwitchPhpVersionCommand);
+if ($commands = $config->get('alias-commands')) {
+    $commandInstances = [];
+    foreach ($commands as $alias => $commandList) {
+        $commandInstances[$alias] = function () use ($alias, $commandList) {
+            return (new Commands\AliasCommand($alias, $commandList))->getClass();
+        };
+    }
+
+    $application->setCommandLoader(new FactoryCommandLoader($commandInstances));
+}
 
 $application->run();

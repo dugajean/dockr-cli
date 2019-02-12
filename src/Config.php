@@ -23,8 +23,8 @@ final class Config
      * Required config structure.
      */
     const STRUCTURE = [
-        'project-name', 'project-domain', 'web-server',
-        'cache-store', 'php-version', 'alias-commands',
+        'project-name', 'project-domain', 'web-server', 'cache-store',
+        'php-version', 'php-extensions', 'alias-commands',
     ];
 
     /**
@@ -51,14 +51,13 @@ final class Config
             if ($this->validate($dataOrKey)) {
                 $this->data = $dataOrKey;
             } else {
-                throw new \RuntimeException('Could not save dockr.json.');
+                throw new \RuntimeException('Could not save dockr.json due to a validation error.');
             }
-
         } elseif ($this->data) {
             $this->data[$dataOrKey] = $this->prepareValue($value);
         }
 
-        return (bool)file_put_contents(self::FILE, $this->makeJson());
+         return (bool)file_put_contents(self::FILE, $this->makeJson());
     }
 
     /**
@@ -100,7 +99,7 @@ final class Config
      */
     public function validate(array $data)
     {
-        return array_keys($data) == self::STRUCTURE;
+        return !array_diff_key(array_flip(self::STRUCTURE), $data);
     }
 
     /**
@@ -122,7 +121,7 @@ final class Config
      *
      * @return false|mixed|string
      */
-    public function makeJson()
+    private function makeJson()
     {
         $json = json_encode($this->data, JSON_PRETTY_PRINT);
 

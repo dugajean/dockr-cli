@@ -91,9 +91,11 @@ class AliasCommand
             $parsedCommand = new $command($this->getName());
             $this->type = self::TYPE_CLASS;
         } else {
-            exit($this->output->writeln(
+            $this->output->writeln(
                 color('red', "Invalid dockr.json command alias detected. Please check '{$this->getName()}' and try again.", true)
-            ));
+            );
+
+            exit(1);
         }
 
         return $parsedCommand;

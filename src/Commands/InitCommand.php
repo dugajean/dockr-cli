@@ -32,6 +32,7 @@ class InitCommand extends Command
      *
      * @return int|void|null
      * @throws \Pouch\Exceptions\NotFoundException
+     * @throws \Pouch\Exceptions\PouchException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -42,9 +43,9 @@ class InitCommand extends Command
         $configStored = $this->storeConfig();
 
         if ($configStored) {
-            $this->output->writeln(color('green', 'Successfully initialized Dockr for this directory!'));
+            $this->output->writeln(color('green', 'Successfully initialized dockr for this directory!'));
         } else {
-            $this->output->writeln(color('red', 'Something went wrong while initializing Dockr. Please try again.'));
+            $this->output->writeln(color('red', 'Something went wrong while initializing Dockr. Please try again.', true));
         }
     }
 
@@ -70,7 +71,7 @@ class InitCommand extends Command
      */
     protected function askProjectName()
     {
-        $this->projectName = (new Question('Please enter the name of the project: '))
+        $this->answers['projectName'] = (new Question('Please enter the name of the project: '))
             ->setValidators(['not_empty'])
             ->render()
             ->outputAnswer()
@@ -84,9 +85,9 @@ class InitCommand extends Command
      */
     protected function askProjectDomain()
     {
-        $defaultDomain = str_replace(' ', '-', strtolower($this->projectName)) . '.';
+        $defaultDomain = str_replace(' ', '-', strtolower($this->answers['projectName'])) . '.';
 
-        $this->projectDomain = (new Question('Please enter the domain for the project: ', $defaultDomain . 'local'))
+        $this->answers['projectDomain'] = (new Question('Please enter the domain for the project: ', $defaultDomain . 'local'))
             ->setAutocomplete([$defaultDomain])
             ->render()
             ->outputAnswer()
@@ -100,7 +101,7 @@ class InitCommand extends Command
      */
     protected function askWebServer()
     {
-        $this->webServer = (new ChoiceQuestion(
+        $this->answers['webServer'] = (new ChoiceQuestion(
             'Please select the webserver you want your project to run on: ',
             SwitchWebServerCommand::getChoices(), 0
         ))
@@ -116,7 +117,7 @@ class InitCommand extends Command
      */
     protected function askCacheStore()
     {
-        $this->cacheStore = (new ChoiceQuestion(
+        $this->answers['cacheStore'] = (new ChoiceQuestion(
             'Please select the cache store you want your project to run on: ',
             SwitchCacheStoreCommand::getChoices(), 0
         ))
@@ -132,7 +133,7 @@ class InitCommand extends Command
      */
     protected function askPhpVersion()
     {
-        $this->phpVersion = (new ChoiceQuestion(
+        $this->answers['phpVersion'] = (new ChoiceQuestion(
             'Please select the PHP version you want your project to run on',
             SwitchPhpVersionCommand::getChoices(), 2
         ))
@@ -192,7 +193,7 @@ class InitCommand extends Command
             array_keys($phpExts), null, true
         ))->render();
 
-        $question->adjustAnswer(function ($choices) use ($phpExts) {
+        $question->adjustAnswer(function ($choices) use (&$phpExts) {
             $resultArray = [];
             foreach ($choices as $extensionName) {
                 $actualExtensionName = $phpExts[$extensionName];
@@ -205,7 +206,7 @@ class InitCommand extends Command
             return array_unique($resultArray);
         })->outputAnswer();
 
-        $this->phpExtensions = array_map(function($item) use ($phpExts) {
+        $this->answers['phpExtensions'] = array_map(function($item) use ($phpExts) {
             return $phpExts[$item];
         }, $question->getAnswer());
     }
@@ -222,14 +223,14 @@ class InitCommand extends Command
         $finder = pouch()->get('stubs_finder');
 
         foreach ($finder as $file) {
-            $folderStructure = $this->currentPath($file->getRelativePath());
+            $folderStructure = current_path($file->getRelativePath());
 
             if (!file_exists($folderStructure)) {
                 mkdir($folderStructure, 0777, true);
             }
 
             $contents = $this->replacementQuery($file->getContents());
-            $fileName = $this->currentPath(str_replace('.stub', '', $file->getRelativePathname()));
+            $fileName = current_path(str_replace('.stub', '', $file->getRelativePathname()));
             file_put_contents($fileName, $contents);
         }
     }
@@ -243,9 +244,9 @@ class InitCommand extends Command
      */
     protected function replacementQuery($haystack)
     {
-        $vhost = constant(SwitchWebServerCommand::class . '::' . strtoupper($this->webServer) . '_CONF');
-        $rawPhp = str_replace('.', '', $this->phpVersion);
-        $phpExts = implode(' ', $this->phpExtensions);
+        $vhost = constant(SwitchWebServerCommand::class . '::' . strtoupper($this->answers['webServer']) . '_CONF');
+        $rawPhp = str_replace('.', '', $this->answers['phpVersion']);
+        $phpExts = implode(' ', $this->answers['phpExtensions']);
 
         return str_replace(
             [
@@ -253,8 +254,8 @@ class InitCommand extends Command
                 '{WEBSERVER_VHOST}', '{PHP_VERSION}', '{PHP_VERSION_RAW}', '{PHP_EXTENSIONS}',
             ],
             [
-                $this->projectName, $this->cacheStore, $this->projectDomain, $this->webServer,
-                $vhost, $this->phpVersion, $rawPhp, $phpExts
+                $this->answers['projectName'], $this->answers['cacheStore'], $this->answers['projectDomain'], $this->answers['webServer'],
+                $vhost, $this->answers['phpVersion'], $rawPhp, $phpExts
             ],
             $haystack
         );
@@ -268,11 +269,12 @@ class InitCommand extends Command
     protected function storeConfig()
     {
         $set = $this->config->set([
-            'project-name' => $this->projectName,
-            'project-domain' => $this->projectDomain,
-            'web-server' => $this->webServer,
-            'cache-store' => $this->cacheStore,
-            'php-version' => $this->phpVersion,
+            'project-name' => $this->answers['projectName'],
+            'project-domain' => $this->answers['projectDomain'],
+            'web-server' => $this->answers['webServer'],
+            'cache-store' => $this->answers['cacheStore'],
+            'php-version' => $this->answers['phpVersion'],
+            'php-extensions' => $this->answers['phpExtensions'],
             'alias-commands' => [
                 'up' => [
                     'docker-compose up -d'

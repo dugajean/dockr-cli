@@ -2,6 +2,7 @@
 
 use Pouch\Pouch;
 use Dockr\Config;
+use Dockr\Hooks\HookRegistrar;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,5 +31,8 @@ pouch()->bind([
     }),
     Config::class => function () {
         return new Config;
-    }
+    },
+    HookRegistrar::class => function ($pouch) {
+        return new HookRegistrar($pouch->get(Config::class));
+    },
 ]);
