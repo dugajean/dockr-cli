@@ -95,7 +95,7 @@ class EventSubscriber
 
             $commandName = str_replace(':', '-', $e->getCommand()->getName());
 
-            if (!$this->hookExists($event, $commandName)) {
+            if (!$this->eventExists($event, $commandName)) {
                 return;
             }
 
@@ -130,7 +130,7 @@ class EventSubscriber
      *
      * @return bool
      */
-    protected function hookExists($event, $command)
+    protected function eventExists($event, $command)
     {
         return array_key_exists($event . '-' . $command, $this->scripts);
     }

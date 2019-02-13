@@ -5,6 +5,7 @@ namespace Dockr\Commands;
 use Dockr\Questions\Question;
 use Dockr\Questions\ChoiceQuestion;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class InitCommand extends Command
@@ -23,12 +24,38 @@ class InitCommand extends Command
     {
         $this
             ->setDescription('Initialize docker-compose')
-            ->setHelp('Start an initialization wizard to setup docker-compose for your project.');
+            ->setHelp('Start an initialization wizard to setup docker-compose for your project.')
+            ->addOption('from-config', null, InputOption::VALUE_NONE, 'Initialize dockr using an existing dockr.json configuration file.')
+            ->addOption('name', null, InputOption::VALUE_REQUIRED, "Your project's name")
+            ->addOption('domain', null, InputOption::VALUE_REQUIRED, "Your project's local domain")
+            ->addOption(
+                'webserver',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The webserver powering your project. Must be: ' . comma_list(SwitchWebServerCommand::getChoices()),
+                SwitchWebServerCommand::getChoices()[0]
+            )
+            ->addOption(
+                'cache',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The desired cache store. Must be: ' . comma_list(SwitchCacheStoreCommand::getChoices()),
+                SwitchCacheStoreCommand::getChoices()[0]
+            )
+            ->addOption(
+                'php',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The PHP version powering your project. Must be: ' . comma_list(SwitchPhpVersionCommand::getChoices()),
+                SwitchPhpVersionCommand::getChoices()[2]
+            );
     }
 
     /**
-     * @param \Symfony\Component\Console\Input\InputInterface   $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * Command execution logic.
+     *
+     * @param InputInterface   $input
+     * @param OutputInterface $output
      *
      * @return int|void|null
      * @throws \Pouch\Exceptions\NotFoundException
@@ -38,7 +65,7 @@ class InitCommand extends Command
     {
         parent::execute($input, $output);
 
-        $this->runWizard();
+        $this->fetchAnswers();
         $this->performReplacements();
         $configStored = $this->storeConfig();
 
@@ -50,18 +77,88 @@ class InitCommand extends Command
     }
 
     /**
+     * Determine in what fashion the answers will be loaded:
+     * Via wizard, from dockr.json or from cli options.
+     *
+     * @return void
+     */
+    public function fetchAnswers()
+    {
+        $name = $this->input->getOption('name');
+        $domain = $this->input->getOption('domain');
+
+        if ($name && $domain) {
+            $this->fromOptions($name, $domain);
+        } elseif (!$this->input->getOption('from-config')) {
+            $this->runWizard();
+        } else {
+            // Otherwise will use $this->answers which was populated from parent class.
+        }
+    }
+
+    /**
+     * Set the answers from CLI options.
+     *
+     * @param string $name
+     * @param string $domain
+     *
+     * @return void
+     */
+    protected function fromOptions($name, $domain)
+    {
+        $webServer = $this->input->getOption('webserver');
+        $cacheStore = $this->input->getOption('cache');
+        $phpVersion = $this->input->getOption('php');
+
+        $webServerChoices = SwitchWebServerCommand::getChoices();
+        $cacheStoreChoices = SwitchCacheStoreCommand::getChoices();
+        $phpVersionChoices = SwitchPhpVersionCommand::getChoices();
+
+        $this->answers = [
+            'projectName' => $name,
+            'projectDomain' => $domain,
+            'webServer' => in_array($webServer, $webServerChoices) ? $webServer : $webServerChoices[0],
+            'cacheStore' => in_array($cacheStore, $cacheStoreChoices) ? $cacheStore : $cacheStoreChoices[0],
+            'phpVersion' => in_array($phpVersion, $phpVersionChoices) ? $phpVersion : $phpVersionChoices[0],
+            'phpExtensions' => [],
+        ];
+    }
+
+    /**
      * Ask series of questions and store answers.
      *
      * @return void
      */
     protected function runWizard()
     {
+        $this->greeting();
+
         $this->askProjectName();
         $this->askProjectDomain();
         $this->askWebServer();
         $this->askCacheStore();
         $this->askPhpVersion();
         $this->askPhpExtensions();
+    }
+
+    /**
+     * Greet the user.
+     *
+     * @return void
+     */
+    protected function greeting()
+    {
+        $this->output->writeln('Welcome to');
+        $this->output->writeln('
+      _            _         
+   __| | ___   ___| | ___ __ 
+  / _` |/ _ \ / __| |/ / \__|
+ | (_| | (_) | (__|   <| |   
+  \__,_|\___/ \___|_|\_\_|   
+        ');
+
+        $this->output->writeln("Let's initialize your docker-compose setup!");
+        $this->output->writeln('');
     }
 
     /**
@@ -151,7 +248,6 @@ class InitCommand extends Command
     {
         $phpExts = [
             'memcached' => 'php-memcached',
-            'mysql' => 'php{PHP_VERSION}-mysql',
             'pgsql' => 'php{PHP_VERSION}-pgsql',
             'redis' => 'php-redis',
             'xdebug' => 'php-xdebug',
@@ -283,10 +379,5 @@ class InitCommand extends Command
         ]);
 
         return $set;
-    }
-
-    private static function sayHello($input, $output, $command)
-    {
-        $output->writeln('XD');
     }
 }

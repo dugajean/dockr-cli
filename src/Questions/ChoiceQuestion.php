@@ -75,8 +75,8 @@ class ChoiceQuestion extends Question implements QuestionInterface
     protected function includeDefault()
     {
         if ($this->default !== null) {
-            $default = $this->choices[$this->default];
-            $this->question = "{$this->question} [{$default}]";
+            $this->default = $this->choices[$this->default];
+            parent::includeDefault();
         }
     }
 }
