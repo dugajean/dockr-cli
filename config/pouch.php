@@ -2,10 +2,14 @@
 
 use Pouch\Pouch;
 use Dockr\Config;
-use Dockr\Hooks\HookRegistrar;
+use Dockr\Events\EventSubscriber;
+use Dockr\Commands\AliasCommand;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\Console\CommandLoader\FactoryCommandLoader;
 
 $rootPath = __DIR__ . '/../';
 
@@ -32,7 +36,29 @@ pouch()->bind([
     Config::class => function () {
         return new Config;
     },
-    HookRegistrar::class => function ($pouch) {
-        return new HookRegistrar($pouch->get(Config::class));
+    Application::class => function () {
+        return new Application('Dockr CLI', '@package_version@');
+    },
+    EventDispatcher::class => function () {
+        return new EventDispatcher;
+    },
+    AliasCommand::class => function ($pouch) {
+        $commandInstances = [];
+        $config = $pouch->get(Config::class);
+        $commands = $config->get('alias-commands');
+
+        foreach ((array)$commands as $alias => $commandList) {
+            $commandInstances[$alias] = function () use ($alias, $commandList) {
+                return (new AliasCommand($alias, $commandList))->getClass();
+            };
+        }
+
+        return $commandInstances;
+    },
+    FactoryCommandLoader::class => function ($pouch) {
+        return new FactoryCommandLoader($pouch->get(AliasCommand::class));
+    },
+    EventSubscriber::class => function ($pouch) {
+        return new EventSubscriber($pouch->get(Config::class), $pouch->get(EventDispatcher::class));
     },
 ]);

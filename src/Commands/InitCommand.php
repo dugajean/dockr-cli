@@ -198,7 +198,7 @@ class InitCommand extends Command
             foreach ($choices as $extensionName) {
                 $actualExtensionName = $phpExts[$extensionName];
                 if (strpos($actualExtensionName, '{PHP_VERSION}') !== false) {
-                    $actualExtensionName = str_replace('{PHP_VERSION}', $this->phpVersion, $actualExtensionName);
+                    $actualExtensionName = str_replace('{PHP_VERSION}', $this->answers['phpVersion'], $actualExtensionName);
                 }
                 $phpExts[$extensionName] = $actualExtensionName;
                 $resultArray[] = $extensionName;

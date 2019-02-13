@@ -4,7 +4,7 @@ namespace Dockr\Commands;
 
 use Dockr\Config;
 use Dockr\Questions\Question;
-use Dockr\Hooks\HookRegistrar;
+use Dockr\Events\EventSubscriber;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
@@ -32,37 +32,14 @@ abstract class Command extends SymfonyCommand
     protected $config;
 
     /**
-     * @var HookRegistrar
+     * @var EventSubscriber
      */
-    protected $hookRegistrar;
+    protected $eventSubscriber;
 
     /**
      * User's answers
      */
     protected $answers = [];
-
-    protected $projectName;
-    protected $projectDomain;
-    protected $webServer;
-    protected $cacheStore;
-    protected $phpVersion;
-    protected $phpExtensions = [];
-
-    /**
-     * Command constructor.
-     *
-     * @param string|null $name
-     *
-     * @return void
-     * @throws \Pouch\Exceptions\NotFoundException
-     * @throws \Pouch\Exceptions\PouchException
-     */
-    public function __construct(string $name = null)
-    {
-        parent::__construct($name);
-
-        $this->hookRegistrar = pouch()->get(HookRegistrar::class);
-    }
 
     /**
      * @param InputInterface   $input
@@ -82,17 +59,14 @@ abstract class Command extends SymfonyCommand
     /**
      * Init the command.
      *
-     * @param InputInterface   $input
-     * @param OutputInterface  $output
+     * @param InputInterface  $input
+     * @param OutputInterface $output
      */
     protected function init(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;
         $this->output = $output;
         $this->questionHelper = $this->getHelper('question');
-
-        // Register and run pre-hooks
-        $this->hookRegistrar->setCommand($this)->register(HookRegistrar::TYPE_PRE);
 
         Question::setIO($input, $output, $this->questionHelper);
     }
@@ -117,25 +91,5 @@ abstract class Command extends SymfonyCommand
             $prop = camel_case($key);
             $this->answers[$prop] = $value;
         }
-    }
-
-    /**
-     * Returns the current output object.
-     *
-     * @return \Symfony\Component\Console\Output\OutputInterface
-     */
-    public function getOutput()
-    {
-        return $this->output;
-    }
-
-    /**
-     * Register and run post-hooks
-     *
-     * @return void
-     */
-    public function __destruct()
-    {
-        $this->hookRegistrar->register(HookRegistrar::TYPE_POST);
     }
 }
