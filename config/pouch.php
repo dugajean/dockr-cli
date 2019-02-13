@@ -62,12 +62,14 @@ pouch()->bind([
     EventSubscriber::class => function ($pouch) {
         return new EventSubscriber($pouch->get(Config::class), $pouch->get(EventDispatcher::class));
     },
-    Updater::class => function () {
-        $updater = new Updater('bin/dockr.phar', false);
+    Updater::class => pouch()->factory(function () {
+        $file = file_exists('bin/dockr.phar') ? 'bin/dockr.phar' : null;
+
+        $updater = new Updater($file, false);
         $updater->setStrategy(Updater::STRATEGY_GITHUB);
         $updater->getStrategy()->setPackageName('dugajean/dockr-cli');
         $updater->getStrategy()->setPharName('dockr.phar');
 
         return $updater;
-    }
+    })
 ]);

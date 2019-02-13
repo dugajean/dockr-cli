@@ -13,9 +13,27 @@ Easy Docker Compose setup for your LAMP and LEMP projects.
 - `ext-json`
 - `ext-ctype`
 
-## Install
+## Download
 
-To do
+###### For direct use
+
+To download the latest release, head over to [Releases](https://github.com/dugajean/dockr-cli/releases) and pick the latest PHAR. Then:
+
+```bash
+$ dockr.phar --version
+```
+
+Feel free to move this to `/usr/local/bin` and remove the `.phar` extension.
+
+###### Per project installation
+
+```bash
+$ composer require dugajean/dockr-cli
+```
+
+```bash
+$ vendor/bin/dockr --version
+```
 
 ## Testing
 

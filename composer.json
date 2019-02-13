@@ -11,6 +11,9 @@
             "email": "me@dukagj.in"
         }
     ],
+    "bin": [
+        "bin/dockr"
+    ],
     "require": {
         "php": "^7",
         "ext-json": "*",
