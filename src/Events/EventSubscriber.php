@@ -65,15 +65,13 @@ class EventSubscriber
      *
      * @param bool $continueOnError
      *
-     * @return $this
+     * @return void
      */
     public function listen($continueOnError = false)
     {
         foreach (self::EVENT_MAP as $event => $eventName) {
             $this->dispatcher->addListener(self::EVENT_MAP[$event], $this->eventHandler($event, $continueOnError));
         }
-
-        return $this;
     }
 
     /**
@@ -105,7 +103,17 @@ class EventSubscriber
                 if (strpos($command, '::') !== false) {
                     list($class, $method) = explode('::', $command);
                     if (class_exists($class) && method_exists($class, $method)) {
-                        $e->getOutput()->writeln($class::{$method}($e->getCommand()));
+                        try {
+                            $methodOutput = $class::{$method}($e->getInput(), $e->getOutput(), $e->getCommand());
+                        } catch (\Error $ex) {
+                            $e->getOutput()->writeln(
+                                color('red', "Couldn't execute method '$command'. Ensure that the visibility is set to public.", true)
+                            );
+
+                            exit(255);
+                        }
+
+                        $e->getOutput()->writeln($methodOutput);
                     }
                 } else {
                     $e->getOutput()->writeln(shell_exec($command));

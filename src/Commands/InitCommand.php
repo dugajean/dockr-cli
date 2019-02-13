@@ -284,4 +284,9 @@ class InitCommand extends Command
 
         return $set;
     }
+
+    private static function sayHello($input, $output, $command)
+    {
+        $output->writeln('XD');
+    }
 }
