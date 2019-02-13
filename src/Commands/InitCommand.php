@@ -4,8 +4,8 @@ namespace Dockr\Commands;
 
 use Dockr\Questions\Question;
 use Dockr\Questions\ChoiceQuestion;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class InitCommand extends Command
@@ -25,7 +25,7 @@ class InitCommand extends Command
         $this
             ->setDescription('Initialize docker-compose')
             ->setHelp('Start an initialization wizard to setup docker-compose for your project.')
-            ->addOption('from-config', null, InputOption::VALUE_NONE, 'Initialize dockr using an existing dockr.json configuration file.')
+            ->addOption('from-config', 'c', InputOption::VALUE_NONE, 'Initialize dockr using an existing dockr.json configuration file.')
             ->addOption('name', null, InputOption::VALUE_REQUIRED, "Your project's name")
             ->addOption('domain', null, InputOption::VALUE_REQUIRED, "Your project's local domain")
             ->addOption(
@@ -54,7 +54,7 @@ class InitCommand extends Command
     /**
      * Command execution logic.
      *
-     * @param InputInterface   $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      *
      * @return int|void|null
@@ -106,7 +106,7 @@ class InitCommand extends Command
      */
     protected function fromOptions($name, $domain)
     {
-        $webServer = $this->input->getOption('webserver');
+        $webServer  = $this->input->getOption('webserver');
         $cacheStore = $this->input->getOption('cache');
         $phpVersion = $this->input->getOption('php');
 
