@@ -2,7 +2,6 @@
 
 namespace Dockr\Commands;
 
-use PHAR;
 use Humbug\SelfUpdate\Updater;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class UpdateCommand extends Command
 {
     /**
-     * @var \Humbug\SelfUpdate\Updater
+     * @var Updater
      */
     private $updater;
 
@@ -32,8 +31,7 @@ final class UpdateCommand extends Command
     {
         $this
             ->setName('update')
-            ->setDescription("Update {$this->getLocalPharName()} to most recent stable build.");
-        ;
+            ->setDescription("Update dockr to most recent stable build.");
     }
 
     /**
@@ -45,18 +43,10 @@ final class UpdateCommand extends Command
 
         if ($result) {
             $output->writeln(
-                color('green', "Your PHAR has been updated from '{$this->updater->getOldVersion()}' to '{$this->updater->getNewVersion()}'.")
+                color('green', "Dockr has been updated from '{$this->updater->getOldVersion()}' to '{$this->updater->getNewVersion()}'.")
             );
         } else {
-            $output->writeln(color('green', 'Your PHAR is already up to date.'));
+            $output->writeln(color('green', 'Dockr is already up to date.'));
         }
-    }
-
-    /**
-     * @return string
-     */
-    private function getLocalPharName()
-    {
-        return basename(PHAR::running());
     }
 }

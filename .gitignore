@@ -6,5 +6,3 @@ docker-compose.yml
 dockr.json
 foo/
 bin/dockr.phar
-bin/dockr.phar.pubkey
-.travis/dockr-phar-private.pem

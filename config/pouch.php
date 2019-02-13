@@ -63,7 +63,7 @@ pouch()->bind([
         return new EventSubscriber($pouch->get(Config::class), $pouch->get(EventDispatcher::class));
     },
     Updater::class => function () {
-        $updater = new Updater('bin/dockr.phar');
+        $updater = new Updater('bin/dockr.phar', false);
         $updater->setStrategy(Updater::STRATEGY_GITHUB);
         $updater->getStrategy()->setPackageName('dugajean/dockr-cli');
         $updater->getStrategy()->setPharName('dockr.phar');

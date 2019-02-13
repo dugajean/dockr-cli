@@ -4,8 +4,6 @@
     "git-version": "package_version",
     "stub": true,
     "chmod": "0755",
-    "algorithm": "OPENSSL",
-    "key": ".travis/dockr-phar-private.pem",
     "directories": ["src", "stubs"],
     "files": [
         "LICENSE",
