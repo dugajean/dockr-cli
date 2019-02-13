@@ -60,6 +60,7 @@ final class App
     {
         return [
             new Commands\InitCommand,
+            new Commands\UpdateCommand,
             new Commands\SwitchWebServerCommand,
             new Commands\SwitchPhpVersionCommand,
             new Commands\SwitchCacheStoreCommand,

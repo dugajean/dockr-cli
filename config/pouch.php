@@ -1,5 +1,6 @@
 <?php
 
+use Humbug\SelfUpdate\Updater;
 use Pouch\Pouch;
 use Dockr\Config;
 use Dockr\Events\EventSubscriber;
@@ -61,4 +62,12 @@ pouch()->bind([
     EventSubscriber::class => function ($pouch) {
         return new EventSubscriber($pouch->get(Config::class), $pouch->get(EventDispatcher::class));
     },
+    Updater::class => function () {
+        $updater = new Updater('bin/dockr.phar');
+        $updater->setStrategy(Updater::STRATEGY_GITHUB);
+        $updater->getStrategy()->setPackageName('dugajean/dockr-cli');
+        $updater->getStrategy()->setPharName('dockr.phar');
+
+        return $updater;
+    }
 ]);
