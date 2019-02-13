@@ -1,12 +1,19 @@
 #!/usr/bin/env php
 <?php
 
-foreach ([__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php'] as $file) {
+$possibleComposers = [
+    __DIR__ . '/../../../autoload.php', __DIR__ . '/../../autoload.php',
+    __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php'
+];
+
+foreach ($possibleComposers as $file) {
     if (file_exists($file)) {
         define('DOCKR_COMPOSER_INSTALL', $file);
         break;
     }
 }
+
+unset($possibleComposers, $file);
 
 if (!defined('DOCKR_COMPOSER_INSTALL')) {
     fwrite(
@@ -24,6 +31,6 @@ require DOCKR_COMPOSER_INSTALL;
 try {
     (new \Dockr\App)->run();
 } catch (\Exception $e) {
-    echo $e->getMessage() . "\n";
+    fwrite(STDERR, $e->getMessage() . PHP_EOL);
     exit(1);
 }
