@@ -346,8 +346,8 @@ class InitCommand extends Command
 
         return str_replace(
             [
-                '{PROJECT_NAME}', '{CACHE_STORE}', '{PROJECT_DOMAIN}', '{WEBSERVER}',
-                '{WEBSERVER_VHOST}', '{PHP_VERSION}', '{PHP_VERSION_RAW}', '{PHP_EXTENSIONS}',
+                '{PROJECT_NAME}', '{CACHE_STORE}', '{PROJECT_DOMAIN}', '{WEB_SERVER}',
+                '{WEB_SERVER_VHOST}', '{PHP_VERSION}', '{PHP_VERSION_RAW}', '{PHP_EXTENSIONS}',
             ],
             [
                 $this->answers['projectName'], $this->answers['cacheStore'], $this->answers['projectDomain'], $this->answers['webServer'],
@@ -372,9 +372,8 @@ class InitCommand extends Command
             'php-version' => $this->answers['phpVersion'],
             'php-extensions' => $this->answers['phpExtensions'],
             'alias-commands' => [
-                'up' => [
-                    'docker-compose up -d'
-                ]
+                'up' => ['docker-compose up -d'],
+                'down' => ['docker-compose down']
             ]
         ]);
 

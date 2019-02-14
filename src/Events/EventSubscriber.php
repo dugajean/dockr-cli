@@ -86,9 +86,8 @@ class EventSubscriber
     {
         return function (ConsoleEvent $e) use ($event, $continueOnError) {
             if (
-                !$continueOnError
-                && $e instanceof ConsoleTerminateEvent
-                && $e->getExitcode() !== 0
+                (!$continueOnError && $e instanceof ConsoleTerminateEvent && $e->getExitcode() !== 0)
+                || $e->getCommand() === null
             ) {
                 return;
             }
@@ -107,7 +106,7 @@ class EventSubscriber
                             $methodOutput = $class::{$method}($e->getInput(), $e->getOutput(), $e->getCommand());
                         } catch (\Error $ex) {
                             $e->getOutput()->writeln(
-                                color('red', "Couldn't execute method '$command'. Ensure that the visibility is set to public.", true)
+                                color('red', "Couldn't execute method '{$command}'. Ensure that the visibility is set to public.", true)
                             );
 
                             exit(255);
@@ -116,7 +115,7 @@ class EventSubscriber
                         $e->getOutput()->writeln($methodOutput);
                     }
                 } else {
-                    $e->getOutput()->writeln(shell_exec($command));
+                    $e->getOutput()->writeln(process($command));
                 }
             }
         };

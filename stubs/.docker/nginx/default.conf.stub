@@ -2,7 +2,7 @@ server {
     listen 80 default_server;
     listen 443 ssl;
 
-    server_name ${APP_DOMAIN} www.${APP_DOMAIN};
+    server_name ${PROJECT_DOMAIN} www.${PROJECT_DOMAIN};
     ssl_certificate /etc/nginx/ssl/nginx.crt;
     ssl_certificate_key /etc/nginx/ssl/nginx.key;
 

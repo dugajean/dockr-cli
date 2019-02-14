@@ -39,10 +39,24 @@ class SwitchWebServerCommand extends SwitchCommand
      */
     public function addReplacements($newValue)
     {
-        $vhostOld = constant(self::class . '::' . strtoupper($this->webServer) . '_CONF');
+        $vhostOld = constant(self::class . '::' . strtoupper($this->answers['webServer']) . '_CONF');
         $vhostNew = constant(self::class . '::' . strtoupper($newValue) . '_CONF');
 
         $this->setReplacement($vhostOld, $vhostNew);
+    }
+
+    /**
+     * Retrieves the appropriate constant.
+     *
+     * @param string $webServer
+     *
+     * @return string
+     */
+    public static function getConf($webServer)
+    {
+        $constant = 'self::' . strtoupper($webServer) . '_CONF';
+
+        return defined($constant) ? constant($constant) : self::APACHE_CONF;
     }
 
     /**

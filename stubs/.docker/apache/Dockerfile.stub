@@ -1,7 +1,8 @@
 FROM httpd:2.4
 
-# Fix debconf warnings upon build
-ARG APP_DOMAIN
+ARG PROJECT_NAME
+ARG PROJECT_DOMAIN
+ARG PHP_VERSION
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Enable SSL
@@ -26,10 +27,10 @@ RUN wget -q https://packages.sury.org/php/apt.gpg -O- | apt-key add -
 RUN echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
 
 # Install OpenSSL and PHP
-RUN apt-get update && apt-get -y --no-install-recommends install openssl php{PHP_VERSION} php{PHP_VERSION}-cli
+RUN apt-get update && apt-get -y --no-install-recommends install openssl php${PHP_VERSION} php${PHP_VERSION}-cli
 
 # Generate SSL certificate
 RUN openssl req -x509 -nodes -days 5000 -newkey rsa:2048 -keyout /usr/local/apache2/conf/server.key -out /usr/local/apache2/conf/server.crt \
-    -subj "/C=EU/ST=Germany/L=Berlin/O=AcmeCorp., Inc./OU=Agency/CN=${APP_DOMAIN}/emailAddress=webmaster@${APP_DOMAIN}"
+    -subj "/C=EU/ST=Germany/L=Berlin/O=${PROJECT_NAME}, Inc./OU=Agency/CN=${PROJECT_DOMAIN}/emailAddress=webmaster@${PROJECT_DOMAIN}"
 
 WORKDIR /app

@@ -1,13 +1,13 @@
 version: "3.1"
 services:
     redis:
-      image: {CACHE_STORE}:alpine
-      container_name: {PROJECT_NAME}-{CACHE_STORE}
+      image: ${CACHE_STORE}:alpine
+      container_name: ${PROJECT_NAME}-${CACHE_STORE}
       restart: unless-stopped
 
     mysql:
       image: mysql:5.7
-      container_name: {PROJECT_NAME}-mysql
+      container_name: ${PROJECT_NAME}-mysql
       working_dir: /app
       volumes:
         - .:/app
@@ -23,30 +23,37 @@ services:
 
     webserver:
       build:
-        context: .docker/{WEBSERVER}
+        context: .docker/${WEB_SERVER}
         args:
-          APP_DOMAIN: "{PROJECT_DOMAIN}"
+          - PROJECT_NAME
+          - PROJECT_DOMAIN
+          - PHP_VERSION
       environment:
-        - APP_DOMAIN={PROJECT_DOMAIN}
-      container_name: {PROJECT_NAME}-webserver
+        - PROJECT_DOMAIN
+      container_name: ${PROJECT_NAME}-webserver
       working_dir: /app
       volumes:
         - .:/app
-        - ./.docker/{WEBSERVER}/default.conf:{WEBSERVER_VHOST}
+        - ./.docker/${WEB_SERVER}/default.conf:${WEB_SERVER_VHOST}
       ports:
        - "80:80"
        - "443:443"
       restart: unless-stopped
 
     php-fpm:
-      build: .docker/php-fpm
-      container_name: {PROJECT_NAME}-php-fpm
+      build:
+        context: .docker/php-fpm
+        args:
+          - PHP_VERSION
+          - PHP_EXTENSIONS
+          - PHP_VERSION_X10
+      container_name: ${PROJECT_NAME}-php-fpm
       expose:
         - "9000"
       working_dir: /app
       volumes:
         - .:/app
-        - ./.docker/php-fpm/php-ini-overrides.ini:/etc/php/{PHP_VERSION}/fpm/conf.d/99-overrides.ini
+        - ./.docker/php-fpm/php-ini-overrides.ini:/etc/php/${PHP_VERSION}/fpm/conf.d/99-overrides.ini
       environment:
         - XDEBUG_CONFIG=remote_host=host.docker.internal
       restart: unless-stopped

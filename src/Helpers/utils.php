@@ -133,3 +133,34 @@ function starts_with($haystack, $needles)
 
     return false;
 }
+
+/**
+ * Execute a shell command.
+ *
+ * @param string $command
+ * @param array  $env
+ *
+ * @return string
+ */
+function process($command, array $env = [])
+{
+    $process = Symfony\Component\Process\Process::fromShellCommandline($command);
+    $process->start(null, $env);
+    $process->wait();
+
+    return $process->getOutput();
+}
+
+/**
+ * Flatten a multi-dimensional array into a single level.
+ *
+ * @param  array  $array
+ * @return array
+ */
+function array_flatten($array)
+{
+    $return = [];
+    array_walk_recursive($array, function($x) use (&$return) { $return[] = $x; });
+
+    return $return;
+}

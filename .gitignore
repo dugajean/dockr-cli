@@ -6,3 +6,4 @@ docker-compose.yml
 dockr.json
 foo/
 bin/dockr.phar
+.env

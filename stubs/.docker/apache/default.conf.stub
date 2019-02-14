@@ -1,6 +1,6 @@
 <VirtualHost *:80>
-    ServerName ${APP_DOMAIN}
-    ServerAlias www.${APP_DOMAIN}
+    ServerName ${PROJECT_DOMAIN}
+    ServerAlias www.${PROJECT_DOMAIN}
     ServerAdmin webmaster@localhost
     DocumentRoot /app/public
 
@@ -22,8 +22,8 @@
 </VirtualHost>
 
 <VirtualHost *:443>
-    ServerName ${APP_DOMAIN}
-    ServerAlias www.${APP_DOMAIN}
+    ServerName ${PROJECT_DOMAIN}
+    ServerAlias www.${PROJECT_DOMAIN}
     ServerAdmin webmaster@localhost
     DocumentRoot /app/public
 

@@ -1,10 +1,11 @@
 <?php
 
-use Humbug\SelfUpdate\Updater;
 use Pouch\Pouch;
 use Dockr\Config;
-use Dockr\Events\EventSubscriber;
+use Humbug\SelfUpdate\Updater;
 use Dockr\Commands\AliasCommand;
+use Dockr\Events\EventSubscriber;
+use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -71,5 +72,8 @@ pouch()->bind([
         $updater->getStrategy()->setPharName('dockr.phar');
 
         return $updater;
-    })
+    }),
+    Dotenv::class => pouch()->factory(function () {
+       return new Dotenv;
+    }),
 ]);
