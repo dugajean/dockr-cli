@@ -166,6 +166,7 @@ function ends_with($haystack, $needles)
 function process($command, array $env = [])
 {
     $process = \Symfony\Component\Process\Process::fromShellCommandline($command);
+    $process->setTimeout(3600);
     $process->start(null, $env);
     $process->wait();
 

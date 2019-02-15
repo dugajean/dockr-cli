@@ -1,4 +1,4 @@
-version: "3.1"
+version: '3.5'
 services:
     redis:
       image: ${CACHE_STORE}:alpine
@@ -47,8 +47,6 @@ services:
           - PHP_VERSION
           - PHP_EXTENSIONS
           - PHP_VERSION_X10
-        environment:
-          - PHP_MAIL="${PHP_MAIL-/usr/sbin/sendmail -t -i}"
       container_name: ${PROJECT_NAME}-php-fpm
       expose:
         - "9000"
@@ -58,6 +56,7 @@ services:
         - ./.docker/php-fpm/php-ini-overrides.ini:/etc/php/${PHP_VERSION}/fpm/conf.d/99-overrides.ini
       environment:
         - XDEBUG_CONFIG=remote_host=${HOST_HOSTNAME}
+        - PHP_MAIL="${PHP_MAIL-/usr/sbin/sendmail -t -i}"
       restart: unless-stopped
 
 volumes:

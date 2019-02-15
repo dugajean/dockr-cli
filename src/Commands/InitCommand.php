@@ -428,7 +428,7 @@ class InitCommand extends Command
         $upCommand = 'docker-compose ~ up -d';
 
         if ($this->getAnswer('addons')) {
-            $composeFiles = '-f ./docker-compose.yml ';
+            $composeFiles = ' -f ./docker-compose.yml ';
             foreach ((array)$this->getAnswer('addons') as $addon) {
                 $file = "./.docker/docker-compose.{$addon}.yml";
 
