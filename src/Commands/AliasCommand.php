@@ -27,7 +27,7 @@ final class AliasCommand
     /**
      * @var string
      */
-    private $type;
+    private $commandType;
 
     /**
      * @var OutputInterface
@@ -79,7 +79,7 @@ final class AliasCommand
      */
     public function getClass()
     {
-        return $this->type == self::TYPE_CLASS ? $this->getCommand() : new class ($this) extends Command
+        return $this->commandType == self::TYPE_CLASS ? $this->getCommand() : new class ($this) extends Command
         {
             /**
              * @var \Dockr\Commands\AliasCommand
@@ -146,10 +146,10 @@ final class AliasCommand
                 return $object;
             }, $command);
 
-            $this->type = self::TYPE_SHELL;
+            $this->commandType = self::TYPE_SHELL;
         } elseif (class_exists($command) && is_subclass_of($command, Command::class)) {
             $parsedCommand = new $command($this->getName());
-            $this->type = self::TYPE_CLASS;
+            $this->commandType = self::TYPE_CLASS;
         } else {
             $this->output->writeln(
                 color('red', "Invalid dockr.json command alias detected. Please check '{$this->getName()}' and try again.", true)

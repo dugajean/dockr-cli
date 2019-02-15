@@ -108,9 +108,11 @@ class Question implements QuestionInterface
     public function outputAnswer()
     {
         $answer = $this->getAnswer();
-        $answer = is_array($answer) ? implode(', ', $answer) : $answer;
+        $answer = is_array($answer) ? comma_list($answer) : $answer;
 
-        self::$output->writeln("> <info>{$answer}</info>");
+        if ($answer && $answer != 'None') {
+            self::$output->writeln("- <info>{$answer}</info>");
+        }
 
         return $this;
     }

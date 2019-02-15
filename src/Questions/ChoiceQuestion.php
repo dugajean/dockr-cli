@@ -18,17 +18,28 @@ class ChoiceQuestion extends Question implements QuestionInterface
     protected $multiChoice;
 
     /**
+     * @var bool
+     */
+    protected $allowEmpty;
+
+    /**
      * ChoiceQuestion constructor.
      *
      * @param string $question
      * @param array  $choices
      * @param int    $default
      * @param bool   $multiChoice
+     * @param bool   $allowEmpty
      */
-    public function __construct($question, array $choices, $default = null, $multiChoice = false)
+    public function __construct($question, array $choices, $default = null, $multiChoice = false, $allowEmpty = false)
     {
+        if ($allowEmpty) {
+            array_unshift($choices, 'None');
+        }
+
         $this->choices = $choices;
         $this->multiChoice = $multiChoice;
+        $this->allowEmpty = $allowEmpty;
 
         parent::__construct($question, $default);
     }

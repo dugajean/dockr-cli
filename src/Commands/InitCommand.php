@@ -81,6 +81,8 @@ class InitCommand extends Command
      * Via wizard, from dockr.json or from cli options.
      *
      * @return void
+     * @throws \Pouch\Exceptions\NotFoundException
+     * @throws \Pouch\Exceptions\PouchException
      */
     public function fetchAnswers()
     {
@@ -128,6 +130,8 @@ class InitCommand extends Command
      * Ask series of questions and store answers.
      *
      * @return void
+     * @throws \Pouch\Exceptions\NotFoundException
+     * @throws \Pouch\Exceptions\PouchException
      */
     protected function runWizard()
     {
@@ -139,6 +143,7 @@ class InitCommand extends Command
         $this->askCacheStore();
         $this->askPhpVersion();
         $this->askPhpExtensions();
+        $this->askOptionalAddons();
     }
 
     /**
@@ -286,25 +291,59 @@ class InitCommand extends Command
 
         $question = (new ChoiceQuestion(
             'Please choose which PHP extensions should be included in your project (comma separated list): ',
-            array_keys($phpExts), null, true
+            array_keys($phpExts), 0, true, true
         ))->render();
 
         $question->adjustAnswer(function ($choices) use (&$phpExts) {
             $resultArray = [];
             foreach ($choices as $extensionName) {
+                if (!array_key_exists($extensionName, $phpExts)) {
+                    continue;
+                }
+
                 $actualExtensionName = $phpExts[$extensionName];
                 if (strpos($actualExtensionName, '{PHP_VERSION}') !== false) {
                     $actualExtensionName = str_replace('{PHP_VERSION}', $this->answers['phpVersion'], $actualExtensionName);
                 }
+
                 $phpExts[$extensionName] = $actualExtensionName;
                 $resultArray[] = $extensionName;
             }
+
             return array_unique($resultArray);
         })->outputAnswer();
 
         $this->answers['phpExtensions'] = array_map(function($item) use ($phpExts) {
             return $phpExts[$item];
         }, $question->getAnswer());
+    }
+
+    /**
+     * Question.
+     *
+     * @return void
+     * @throws \Pouch\Exceptions\NotFoundException
+     * @throws \Pouch\Exceptions\PouchException
+     */
+    protected function askOptionalAddons()
+    {
+        $addons = [];
+        $finder = pouch()->get('stubs_finder');
+
+        foreach ($finder as $file) {
+            $path = $file->getRelativePathname();
+            if (starts_with($path, '.docker/') && ends_with($path, '.yml.stub')) {
+                $addons[] = str_replace(['.docker/docker-compose.', '.yml.stub'], '', $path);
+            }
+        }
+
+        $this->answers['addons'] = (new ChoiceQuestion(
+            'Include optional addons to your setup (comma separated list): ',
+            $addons, 0, true, true
+        ))
+            ->render()
+            ->outputAnswer()
+            ->getAnswer();
     }
 
     /**
@@ -331,25 +370,78 @@ class InitCommand extends Command
     }
 
     /**
+     * Fetches an answer from the answers prop.
+     *
+     * @param string $key
+     *
+     * @return array|string
+     */
+    protected function getAnswer($key)
+    {
+        if (!array_key_exists($key, $this->answers)) {
+            throw new \RuntimeException('Cannot find this answer in the answers list.');
+        }
+
+        if (is_array($this->answers[$key])) {
+            $this->answers[$key] = array_filter($this->answers[$key], function ($item) {
+                return $item !== 'None';
+            });
+        }
+
+        return $this->answers[$key];
+    }
+
+    /**
      * Store JSON config file with all the data.
      *
      * @return bool
      */
     protected function storeConfig()
     {
-        $set = $this->config->set([
-            'project-name' => $this->answers['projectName'],
-            'project-domain' => $this->answers['projectDomain'],
-            'web-server' => $this->answers['webServer'],
-            'cache-store' => $this->answers['cacheStore'],
-            'php-version' => $this->answers['phpVersion'],
-            'php-extensions' => $this->answers['phpExtensions'],
+        $config = [
+            'project-name' => $this->getAnswer('projectName'),
+            'project-domain' => $this->getAnswer('projectDomain'),
+            'web-server' => $this->getAnswer('webServer'),
+            'cache-store' => $this->getAnswer('cacheStore'),
+            'php-version' => $this->getAnswer('phpVersion'),
+            'php-extensions' => $this->getAnswer('phpExtensions'),
+            'addons' => $this->getAnswer('addons'),
             'alias-commands' => [
-                'up' => ['docker-compose up -d'],
+                'up' => [$this->upCommand()],
                 'down' => ['docker-compose down']
             ]
-        ]);
+        ];
+
+        $set = $this->config->set($config);
 
         return $set;
+    }
+
+    /**
+     * Prepares the docker-compose up command based on the wizard results.
+     *
+     * @return string
+     */
+    protected function upCommand()
+    {
+        $upCommand = 'docker-compose ~ up -d';
+
+        if ($this->getAnswer('addons')) {
+            $composeFiles = '-f ./docker-compose.yml ';
+            foreach ((array)$this->getAnswer('addons') as $addon) {
+                $file = "./.docker/docker-compose.{$addon}.yml";
+
+                if (!file_exists($file)) {
+                    continue;
+                }
+
+                $composeFiles .= "-f {$file}";
+            }
+            $upCommand = str_replace('~', $composeFiles, $upCommand);
+        } else {
+            $upCommand = str_replace('~ ', '', $upCommand);
+        }
+
+        return $upCommand;
     }
 }
