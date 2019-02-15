@@ -20,31 +20,7 @@ class SwitchPhpVersionCommand extends SwitchCommand
             ->setName('switch:php')
             ->setDescription('Switch the PHP version of this project')
             ->setHelp("Switches the PHP version of a project previously setup with Dockr. Allowed values are: {$options}")
-            ->setDefinition(
-                new InputDefinition([
-                    new InputArgument($this->getArgument(), InputArgument::REQUIRED, 'The new PHP version you want to set'),
-                ])
-            );
-    }
-
-    /**
-     * Add additional replacements/
-     *
-     * @param string $newValue
-     *
-     * @return void
-     */
-    protected function addReplacements($newValue)
-    {
-        $oldPhp = str_replace('.', '', $this->phpVersion);
-
-        /**
-         * Corresponds to the correct phpdockerio image
-         * @see https://hub.docker.com/u/phpdockerio
-         */
-        $newPhp = $newValue == '7.0' ? '7' : str_replace('.', '', $newValue);
-
-        $this->setReplacement($oldPhp, $newPhp);
+            ->addArgument($this->getArgument(), InputArgument::REQUIRED, 'The new PHP version you want to set');
     }
 
     /**

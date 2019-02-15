@@ -157,7 +157,7 @@ function process($command, array $env = [])
  * @param  array  $array
  * @return array
  */
-function array_flatten($array)
+function array_flatten(array $array)
 {
     $return = [];
     array_walk_recursive($array, function($x) use (&$return) { $return[] = $x; });

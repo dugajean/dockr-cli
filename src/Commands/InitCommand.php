@@ -66,7 +66,7 @@ class InitCommand extends Command
         parent::execute($input, $output);
 
         $this->fetchAnswers();
-        $this->performReplacements();
+        $this->copyStubs();
         $configStored = $this->storeConfig();
 
         if ($configStored) {
@@ -314,7 +314,7 @@ class InitCommand extends Command
      * @throws \Pouch\Exceptions\NotFoundException
      * @throws \Pouch\Exceptions\PouchException
      */
-    protected function performReplacements()
+    protected function copyStubs()
     {
         $finder = pouch()->get('stubs_finder');
 
@@ -325,36 +325,9 @@ class InitCommand extends Command
                 mkdir($folderStructure, 0777, true);
             }
 
-            $contents = $this->replacementQuery($file->getContents());
             $fileName = current_path(str_replace('.stub', '', $file->getRelativePathname()));
-            file_put_contents($fileName, $contents);
+            file_put_contents($fileName, $file->getContents());
         }
-    }
-
-    /**
-     * Performs the actual string replacement for all files.
-     *
-     * @param $haystack
-     *
-     * @return string
-     */
-    protected function replacementQuery($haystack)
-    {
-        $vhost = constant(SwitchWebServerCommand::class . '::' . strtoupper($this->answers['webServer']) . '_CONF');
-        $rawPhp = str_replace('.', '', $this->answers['phpVersion']);
-        $phpExts = implode(' ', $this->answers['phpExtensions']);
-
-        return str_replace(
-            [
-                '{PROJECT_NAME}', '{CACHE_STORE}', '{PROJECT_DOMAIN}', '{WEB_SERVER}',
-                '{WEB_SERVER_VHOST}', '{PHP_VERSION}', '{PHP_VERSION_RAW}', '{PHP_EXTENSIONS}',
-            ],
-            [
-                $this->answers['projectName'], $this->answers['cacheStore'], $this->answers['projectDomain'], $this->answers['webServer'],
-                $vhost, $this->answers['phpVersion'], $rawPhp, $phpExts
-            ],
-            $haystack
-        );
     }
 
     /**

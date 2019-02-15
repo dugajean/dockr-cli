@@ -184,6 +184,8 @@ final class AliasCommand
 
         $envData['PHP_VERSION_X10']  = $envData['PHP_VERSION'] == '7.0' ? '7' : $envData['PHP_VERSION'] * 10;
         $envData['WEB_SERVER_VHOST'] = SwitchWebServerCommand::getConf($envData['WEB_SERVER']);
+        $envData['HOST_HOSTNAME'] = 'host.docker.internal';
+
         $dotEnv->populate($envData, true);
 
         $envFile = $config->get('environment-file') ?? '.env';

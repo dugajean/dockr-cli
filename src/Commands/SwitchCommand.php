@@ -54,7 +54,7 @@ abstract class SwitchCommand extends Command
         }
 
         $this->validate();
-        $this->performReplacements();
+        $this->config->set(snake_case($this->currentProp, '-'), $this->newValue);
 
         $prop = snake_case($this->currentProp, ' ');
         $this->output->writeln(color('green', "Successfully changed the {$prop} to {$this->newValue}."));
@@ -78,59 +78,6 @@ abstract class SwitchCommand extends Command
         }
 
         return $this;
-    }
-
-    /**
-     * Set a new replacement query.
-     *
-     * @param string $search
-     * @param string $replace
-     *
-     * @return $this
-     */
-    public function setReplacement($search, $replace)
-    {
-        $this->replacements[(string)$search] = (string)$replace;
-
-        return $this;
-    }
-
-    /**
-     * Replace the files
-     *
-     * @throws \Pouch\Exceptions\NotFoundException
-     * @throws \Pouch\Exceptions\PouchException
-     */
-    protected function performReplacements()
-    {
-        $finder = pouch()->get('docker_finder');
-
-        foreach ($finder as $file) {
-            $contents = $this->replacementQuery($file->getContents());
-            $fileName = current_path($file->getRelativePathname());
-            file_put_contents($fileName, $contents);
-        }
-
-        $this->config->set(snake_case($this->currentProp, '-'), $this->newValue);
-
-        return $this;
-    }
-
-    /**
-     * Performs the actual string replacement for all files.
-     *
-     * @param string $haystack
-     *
-     * @return string
-     */
-    protected function replacementQuery($haystack)
-    {
-        $this->replacements[$this->answers[$this->currentProp]] = $this->newValue;
-
-        $searches = array_keys($this->replacements);
-        $replacements = array_values($this->replacements);
-
-        return str_replace($searches, $replacements, $haystack);
     }
 
     /**
