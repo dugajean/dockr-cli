@@ -1,0 +1,16 @@
+version: '3.5'
+services:
+   php-fpm:
+     links:
+       - webserver
+   mailhog:
+     container_name: ${PROJECT_NAME}-mailhog
+     image: mailhog/mailhog
+     user: root
+     environment:
+       VIRTUAL_HOST: mail.${PROJECT_DOMAIN}
+       WEBSOCKETS: 1
+       MH_UI_BIND_ADDR: '0.0.0.0:80'
+       MH_API_BIND_ADDR: '0.0.0.0:80'
+     expose:
+       - 80
