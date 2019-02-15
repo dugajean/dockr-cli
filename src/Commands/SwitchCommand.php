@@ -4,6 +4,7 @@ namespace Dockr\Commands;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use function Dockr\Helpers\{camel_case, class_basename, color, snake_case};
 
 abstract class SwitchCommand extends Command
 {

@@ -3,6 +3,7 @@
 namespace Dockr\Events;
 
 use Dockr\Config;
+use function Dockr\Helpers\{color, process};
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;

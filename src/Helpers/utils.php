@@ -1,5 +1,7 @@
 <?php
 
+namespace Dockr\Helpers;
+
 /**
  * Convert case to studly.
  *
@@ -163,7 +165,7 @@ function ends_with($haystack, $needles)
  */
 function process($command, array $env = [])
 {
-    $process = Symfony\Component\Process\Process::fromShellCommandline($command);
+    $process = \Symfony\Component\Process\Process::fromShellCommandline($command);
     $process->start(null, $env);
     $process->wait();
 

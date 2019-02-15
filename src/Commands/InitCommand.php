@@ -7,6 +7,7 @@ use Dockr\Questions\ChoiceQuestion;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use function Dockr\Helpers\{comma_list, color, starts_with, ends_with, current_path};
 
 class InitCommand extends Command
 {

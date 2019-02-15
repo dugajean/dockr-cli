@@ -2,8 +2,8 @@
 
 namespace Dockr\Commands;
 
+use function Dockr\Helpers\comma_list;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputDefinition;
 
 class SwitchWebServerCommand extends SwitchCommand
 {
@@ -24,21 +24,6 @@ class SwitchWebServerCommand extends SwitchCommand
             ->setDescription('Switch the webserver powering this project')
             ->setHelp("Switches the webserver of a project previously setup with Dockr. Allowed values are: {$options}")
             ->addArgument($this->getArgument(), InputArgument::REQUIRED, 'The new webserver you want to set');
-    }
-
-    /**
-     * Adds replacer for the vhost mounting point in docker-compose.yml
-     *
-     * @param $newValue
-     *
-     * @return void
-     */
-    public function addReplacements($newValue)
-    {
-        $vhostOld = constant(self::class . '::' . strtoupper($this->answers['webServer']) . '_CONF');
-        $vhostNew = constant(self::class . '::' . strtoupper($newValue) . '_CONF');
-
-        $this->setReplacement($vhostOld, $vhostNew);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace Dockr\Commands;
 use Dockr\Config;
 use Dockr\Questions\Question;
 use Dockr\Events\EventSubscriber;
+use function Dockr\Helpers\camel_case;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;

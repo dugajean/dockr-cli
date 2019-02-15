@@ -2,8 +2,8 @@
 
 namespace Dockr\Commands;
 
+use function Dockr\Helpers\comma_list;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputDefinition;
 
 class SwitchCacheStoreCommand extends SwitchCommand
 {
