@@ -428,16 +428,14 @@ class InitCommand extends Command
         $upCommand = 'docker-compose ~ up -d';
         $composeFiles = ' -f ./.docker/docker-compose.yml';
 
-        if ($this->getAnswer('addons')) {
-            foreach ((array)$this->getAnswer('addons') as $addon) {
-                $file = " ./.docker/docker-compose.{$addon}.yml";
+        foreach ((array)$this->getAnswer('addons') as $addon) {
+            $file = " ./.docker/docker-compose.{$addon}.yml";
 
-                if (!file_exists($file)) {
-                    continue;
-                }
-
-                $composeFiles .= "-f {$file}";
+            if (!file_exists($file)) {
+                continue;
             }
+
+            $composeFiles .= "-f {$file}";
         }
 
         return str_replace('~', $composeFiles, $upCommand);

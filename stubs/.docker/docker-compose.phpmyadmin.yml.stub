@@ -1,15 +1,15 @@
 version: '3.5'
 services:
   phpmyadmin:
+    container_name: ${PROJECT_NAME}-phpmyadmin
     image: phpmyadmin/phpmyadmin
-    container_name: ${PROJECT_NAME}-pma
     links:
       - mysql
-    expose:
-      - 80
+    ports:
+      - "8306:80"
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3306
-      VIRTUAL_HOST: pma.${PROJECT_DOMAIN}
     volumes:
       - /sessions
+    restart: unless-stopped

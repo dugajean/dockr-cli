@@ -1,17 +1,17 @@
 version: '3.5'
 services:
-    redis:
-      image: ${CACHE_STORE}:alpine
+    cache-store:
       container_name: ${PROJECT_NAME}-${CACHE_STORE}
+      image: ${CACHE_STORE}:alpine
       restart: unless-stopped
 
     mysql:
-      image: mysql:5.7
       container_name: ${PROJECT_NAME}-mysql
+      image: mysql:5.7
       working_dir: /app
       volumes:
         - .:/app
-        - dbdata:/var/lib/mysql
+        - ${PROJECT_NAME}-dbdata:/var/lib/mysql
       environment:
         - MYSQL_ROOT_PASSWORD=dev
         - MYSQL_DATABASE=dev
@@ -22,6 +22,7 @@ services:
       restart: unless-stopped
 
     webserver:
+      container_name: ${PROJECT_NAME}-webserver
       build:
         context: .docker/${WEB_SERVER}
         args:
@@ -30,7 +31,6 @@ services:
           - PHP_VERSION
       environment:
         - PROJECT_DOMAIN
-      container_name: ${PROJECT_NAME}-webserver
       volumes:
         - .:/app
         - ./.docker/${WEB_SERVER}/default.conf:${WEB_SERVER_VHOST}
@@ -40,15 +40,13 @@ services:
       restart: unless-stopped
 
     php-fpm:
+      container_name: ${PROJECT_NAME}-php-fpm
       build:
         context: .docker/php-fpm
         args:
           - PHP_VERSION
           - PHP_EXTENSIONS
           - PHP_VERSION_X10
-      container_name: ${PROJECT_NAME}-php-fpm
-      expose:
-        - "9000"
       volumes:
         - .:/app
         - ./.docker/php-fpm/php-ini-overrides.ini:/etc/php/${PHP_VERSION}/fpm/conf.d/99-overrides.ini
@@ -58,6 +56,5 @@ services:
       restart: unless-stopped
 
 volumes:
-  dbdata:
-    driver: local
+  ${PROJECT_NAME}-dbdata:
 
