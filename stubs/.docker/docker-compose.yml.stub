@@ -31,7 +31,6 @@ services:
       environment:
         - PROJECT_DOMAIN
       container_name: ${PROJECT_NAME}-webserver
-      working_dir: /app
       volumes:
         - .:/app
         - ./.docker/${WEB_SERVER}/default.conf:${WEB_SERVER_VHOST}
@@ -50,7 +49,6 @@ services:
       container_name: ${PROJECT_NAME}-php-fpm
       expose:
         - "9000"
-      working_dir: /app
       volumes:
         - .:/app
         - ./.docker/php-fpm/php-ini-overrides.ini:/etc/php/${PHP_VERSION}/fpm/conf.d/99-overrides.ini
