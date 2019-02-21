@@ -1,9 +1,0 @@
-version: '3.5'
-services:
-   mailhog:
-     container_name: ${PROJECT_NAME}-mailhog
-     image: mailhog/mailhog
-     ports:
-       - "1025:1025"
-       - "8025:8025"
-     restart: unless-stopped
