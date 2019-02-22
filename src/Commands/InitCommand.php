@@ -8,7 +8,7 @@ use Dockr\Questions\ChoiceQuestion;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use function Dockr\Helpers\{comma_list, color, starts_with, ends_with, current_path};
+use function Dockr\Helpers\{comma_list, color, snake_case, starts_with, ends_with, current_path};
 
 class InitCommand extends Command
 {
@@ -347,13 +347,16 @@ class InitCommand extends Command
 
     public function askUseDotenv()
     {
-        $this->answers['useDotenv'] = (new ConfirmationQuestion(
+        $question = (new ConfirmationQuestion(
             'We have detected the existence of a .env file in your project root. Use this file for your containers\' environment variables?: ',
             true
-        ))
-            ->render()
-            ->outputAnswer()
-            ->getAnswer();
+        ))->render();
+
+        $question->adjustAnswer(function ($answer) {
+            return $answer === true ? '.env' : $answer;
+        });
+
+        $this->answers['environmentFile'] = $question->getAnswer();
     }
 
     /**
@@ -408,33 +411,24 @@ class InitCommand extends Command
      */
     protected function storeConfig()
     {
-        $config = [
-            'project-name' => $this->getAnswer('projectName'),
-            'project-domain' => $this->getAnswer('projectDomain'),
-            'web-server' => $this->getAnswer('webServer'),
-            'cache-store' => $this->getAnswer('cacheStore'),
-            'php-version' => $this->getAnswer('phpVersion'),
-            'php-extensions' => $this->getAnswer('phpExtensions'),
-            'addons' => $this->getAnswer('addons'),
-            'aliases' => [
-                'up' => [
-                    'help' => 'Starts docker-compose with your custom environment',
-                    'commands' => [$this->upCommand()]
-                ],
-                'down' => [
-                    'help' => 'Shuts off docker-compose',
-                    'commands' => ['docker-compose down']
-                ]
+        $dockrJson = [];
+
+        foreach (array_keys($this->answers) as $key) {
+            $dockrJson[snake_case($key, '-')] = $this->getAnswer($key);
+        }
+
+        $dockrJson['aliases'] = [
+            'up' => [
+                'help' => 'Starts docker-compose with your custom environment',
+                'commands' => [$this->upCommand()]
+            ],
+            'down' => [
+                'help' => 'Shuts off docker-compose',
+                'commands' => ['docker-compose down']
             ]
         ];
 
-        if (!$this->getAnswer('useDotenv')) {
-            $config['environment-file'] = false;
-        }
-
-        $set = $this->config->set($config);
-
-        return $set;
+        return $this->config->set($dockrJson);
     }
 
     /**
