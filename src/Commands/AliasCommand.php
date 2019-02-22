@@ -8,7 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use function Dockr\Helpers\{process, color, current_path, array_flatten};
+use function Dockr\Helpers\{process, color, current_path, array_flatten, is_assoc};
 
 final class AliasCommand
 {
@@ -105,7 +105,10 @@ final class AliasCommand
              */
             protected function configure()
             {
-                foreach ($this->alias->getCommand() as $command) {
+                $commandList = $this->alias->getCommand();
+
+                foreach ($commandList as $command) {
+                    $this->setDescription($command->help);
                     foreach ($command->arguments as $argument) {
                         $this->addArgument($argument, InputArgument::REQUIRED);
                     }
@@ -123,6 +126,7 @@ final class AliasCommand
                         $commandStr = str_replace("{{$argument}}", $input->getArgument($argument), $commandStr);
                     }
 
+                    $output->writeln(color('yellow', "> $commandStr"));
                     $output->write(process($commandStr, getenv()));
                 }
             }
@@ -139,13 +143,18 @@ final class AliasCommand
     private function prepareCommand($command)
     {
         if (is_array($command)) {
-            $parsedCommand = array_map(function ($item) {
+            $isAssoc = is_assoc($command);
+            $cmdList = $isAssoc ? $command['commands'] : $command;
+            $helpTxt = $isAssoc ? $command['help'] : 'Alias command';
+
+            $parsedCommand = array_map(function ($item) use ($helpTxt) {
                 $object = new \stdClass;
                 $object->body = $item;
                 preg_match_all('~\{([^}]*)\}~', $item, $matches);
                 $object->arguments = $matches[1];
+                $object->help = $helpTxt;
                 return $object;
-            }, $command);
+            }, $cmdList);
 
             $this->commandType = self::TYPE_SHELL;
         } elseif (class_exists($command) && is_subclass_of($command, Command::class)) {

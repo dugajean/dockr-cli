@@ -6,3 +6,4 @@ dockr.json
 foo/
 bin/dockr.phar
 .env
+.docker/

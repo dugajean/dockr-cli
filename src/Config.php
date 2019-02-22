@@ -24,7 +24,7 @@ final class Config
      */
     const STRUCTURE = [
         'project-name', 'project-domain', 'web-server', 'cache-store',
-        'php-version', 'php-extensions', 'alias-commands', 'addons',
+        'php-version', 'php-extensions', 'aliases', 'addons',
     ];
 
     /**

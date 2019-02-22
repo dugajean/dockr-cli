@@ -36,7 +36,7 @@ pouch()->bind([
     AliasCommand::class => function ($pouch) {
         $commandInstances = [];
         $config = $pouch->get(Config::class);
-        $commands = $config->get('alias-commands');
+        $commands = $config->get('aliases');
 
         foreach ((array)$commands as $alias => $commandList) {
             $commandInstances[$alias] = function () use ($alias, $commandList) {

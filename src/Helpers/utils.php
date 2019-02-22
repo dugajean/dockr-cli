@@ -186,3 +186,15 @@ function array_flatten(array $array)
 
     return $return;
 }
+
+/**
+ * Determines whether an array if associative (has strings as keys) or indexed with numbers.
+ *
+ * @param array $array
+ *
+ * @return bool
+ */
+function is_assoc(array $array)
+{
+    return count(array_filter(array_keys($array), 'is_string')) > 0;
+}

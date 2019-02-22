@@ -28,7 +28,7 @@ Feel free to move this to `/usr/local/bin` and remove the `.phar` extension.
 ###### Per project installation
 
 ```bash
-$ composer require dugajean/dockr-cli
+$ composer require dugajean/dockr-cli --dev
 ```
 
 ```bash

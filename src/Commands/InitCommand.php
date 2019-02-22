@@ -12,11 +12,6 @@ use function Dockr\Helpers\{comma_list, color, starts_with, ends_with, current_p
 class InitCommand extends Command
 {
     /**
-     * @var string
-     */
-    protected static $defaultName = 'init';
-
-    /**
      * Configure the command
      *
      * @return void
@@ -24,6 +19,7 @@ class InitCommand extends Command
     protected function configure()
     {
         $this
+            ->setName('init')
             ->setDescription('Initialize docker-compose')
             ->setHelp('Start an initialization wizard to setup docker-compose for your project.')
             ->addOption('from-config', 'c', InputOption::VALUE_NONE, 'Initialize dockr using an existing dockr.json configuration file.')
@@ -407,9 +403,15 @@ class InitCommand extends Command
             'php-version' => $this->getAnswer('phpVersion'),
             'php-extensions' => $this->getAnswer('phpExtensions'),
             'addons' => $this->getAnswer('addons'),
-            'alias-commands' => [
-                'up' => [$this->upCommand()],
-                'down' => ['docker-compose down']
+            'aliases' => [
+                'up' => [
+                    'help' => 'Starts docker-compose with your custom environment',
+                    'commands' => [$this->upCommand()]
+                ],
+                'down' => [
+                    'help' => 'Shuts off docker-compose',
+                    'commands' => ['docker-compose down']
+                ]
             ]
         ];
 
@@ -429,7 +431,7 @@ class InitCommand extends Command
         $composeFiles = '-f ./.docker/docker-compose.yml';
 
         foreach ((array)$this->getAnswer('addons') as $addon) {
-            $file = "./.docker/docker-compose.{$addon}.yml";
+            $file = current_path(".docker/docker-compose.{$addon}.yml");
 
             if (!file_exists($file)) {
                 continue;

@@ -32,7 +32,7 @@ final class UpdateCommand extends Command
     {
         $this
             ->setName('update')
-            ->setDescription("Update dockr to most recent stable build.");
+            ->setDescription('Update dockr to most recent stable build');
     }
 
     /**
