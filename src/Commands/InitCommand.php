@@ -2,6 +2,7 @@
 
 namespace Dockr\Commands;
 
+use Dockr\Questions\ConfirmationQuestion;
 use Dockr\Questions\Question;
 use Dockr\Questions\ChoiceQuestion;
 use Symfony\Component\Console\Input\InputOption;
@@ -141,6 +142,7 @@ class InitCommand extends Command
         $this->askPhpVersion();
         $this->askPhpExtensions();
         $this->askOptionalAddons();
+        $this->askUseDotEnv();
     }
 
     /**
@@ -343,6 +345,17 @@ class InitCommand extends Command
             ->getAnswer();
     }
 
+    public function askUseDotenv()
+    {
+        $this->answers['useDotenv'] = (new ConfirmationQuestion(
+            'We have detected the existence of a .env file in your project root. Use this file for your containers\' environment variables?: ',
+            true
+        ))
+            ->render()
+            ->outputAnswer()
+            ->getAnswer();
+    }
+
     /**
      * Prepare the stubs
      *
@@ -414,6 +427,10 @@ class InitCommand extends Command
                 ]
             ]
         ];
+
+        if (!$this->getAnswer('useDotenv')) {
+            $config['environment-file'] = false;
+        }
 
         $set = $this->config->set($config);
 

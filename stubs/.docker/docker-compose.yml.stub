@@ -31,6 +31,7 @@ services:
           - PHP_VERSION
       environment:
         - PROJECT_DOMAIN
+        - PUBLIC_PATH
       volumes:
         - .:/app
         - ./.docker/${WEB_SERVER}/default.conf:${WEB_SERVER_VHOST}

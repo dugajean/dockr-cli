@@ -8,7 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use function Dockr\Helpers\{process, color, current_path, array_flatten, is_assoc};
+use function Dockr\Helpers\{add_slash, process, color, current_path, array_flatten, is_assoc};
 
 final class AliasCommand
 {
@@ -36,6 +36,16 @@ final class AliasCommand
     private $output;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var Dotenv
+     */
+    private $dotEnv;
+
+    /**
      * AliasParser constructor.
      *
      * @param string       $name
@@ -49,6 +59,8 @@ final class AliasCommand
         $this->name = $name;
         $this->output = pouch()->get(OutputInterface::class);
         $this->command = $this->prepareCommand($command);
+        $this->config = pouch()->get(Config::class);
+        $this->dotEnv = pouch()->get(Dotenv::class);
 
         $this->populateEnvironment();
     }
@@ -175,32 +187,49 @@ final class AliasCommand
      * Populate the environment.
      *
      * @return void
-     * @throws \Pouch\Exceptions\NotFoundException
-     * @throws \Pouch\Exceptions\PouchException
      */
     private function populateEnvironment()
     {
-        $config = pouch()->get(Config::class);
-        $dotEnv = pouch()->get(Dotenv::class);
+        $this->mainEnv();
+        $this->fileEnv();
+    }
 
-        $envData = [];
+    /**
+     * Loads dockr.json main information into the env.
+     *
+     * @return void
+     */
+    private function mainEnv()
+    {
         foreach (Config::STRUCTURE as $configKey) {
-            if ($val = $config->get($configKey)) {
+            if ($val = $this->config->get($configKey)) {
                 $key = strtoupper(str_replace('-', '_', $configKey));
                 $val = is_array($val) ? implode(' ', array_flatten($val)) : $val;
                 $envData[$key] = $val;
             }
         }
 
-        $envData['PHP_VERSION_X10']  = $envData['PHP_VERSION'] == '7.0' ? '7' : $envData['PHP_VERSION'] * 10;
-        $envData['WEB_SERVER_VHOST'] = SwitchWebServerCommand::getConf($envData['WEB_SERVER']);
         $envData['HOST_HOSTNAME'] = 'host.docker.internal';
+        $envData['WEB_SERVER_VHOST'] = SwitchWebServerCommand::getConf($envData['WEB_SERVER']);
+        $envData['PHP_VERSION_X10'] = $envData['PHP_VERSION'] == '7.0' ? '7' : $envData['PHP_VERSION'] * 10;
 
-        $dotEnv->populate($envData, true);
+        $dockerRoot = '/app';
+        $dockerRoot .= array_key_exists('PUBLIC_PATH', $envData) ? add_slash($envData['PUBLIC_PATH']) : '/app/public';
+        $envData['PUBLIC_PATH'] = $dockerRoot;
 
-        $envFile = $config->get('environment-file') ?? '.env';
+        $this->dotEnv->populate($envData, true);
+    }
+
+    /**
+     * Loads .env into the env.
+     *
+     * @return void
+     */
+    private function fileEnv()
+    {
+        $envFile = $this->config->get('environment-file') ?? '.env';
         if ($envFile && file_exists(current_path($envFile))) {
-            $dotEnv->load($envFile);
+            $this->dotEnv->load($envFile);
         }
     }
 }

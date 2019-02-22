@@ -48,11 +48,7 @@ final class Config
     public function set($dataOrKey = null, $value = null)
     {
         if (is_array($dataOrKey)) {
-            if ($this->validate($dataOrKey)) {
-                $this->data = $dataOrKey;
-            } else {
-                throw new \RuntimeException('Could not save dockr.json due to a validation error.');
-            }
+            $this->data = $dataOrKey;
         } elseif ($this->data) {
             $this->data[$dataOrKey] = $this->prepareValue($value);
         }
@@ -88,18 +84,6 @@ final class Config
     public function exists()
     {
         return $this->data && count($this->data) > 0;
-    }
-
-    /**
-     * Validate the configuration structure.
-     *
-     * @param array $data
-     *
-     * @return bool
-     */
-    public function validate(array $data)
-    {
-        return !array_diff_key(array_flip(self::STRUCTURE), $data);
     }
 
     /**
