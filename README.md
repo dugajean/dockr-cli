@@ -9,6 +9,7 @@ Easy Docker Compose setup for your LAMP and LEMP projects.
 
 ## Requirements
 
+- Docker & docker-compose
 - PHP 7+
 - `ext-json`
 - `ext-ctype`
