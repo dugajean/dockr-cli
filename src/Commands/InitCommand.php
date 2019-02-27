@@ -420,11 +420,11 @@ class InitCommand extends Command
         $dockrJson['aliases'] = [
             'up' => [
                 'help' => 'Starts docker-compose with your custom environment',
-                'commands' => [$this->upCommand()]
+                'commands' => [$this->upDownCommands('up')]
             ],
             'down' => [
                 'help' => 'Shuts off docker-compose',
-                'commands' => ['docker-compose down']
+                'commands' => [$this->upDownCommands('down')]
             ]
         ];
 
@@ -434,11 +434,15 @@ class InitCommand extends Command
     /**
      * Prepares the docker-compose up command based on the wizard results.
      *
+     * @param string $mode
+     *
      * @return string
      */
-    protected function upCommand()
+    protected function upDownCommands($mode)
     {
-        $upCommand = 'docker-compose ~ up -d';
+        $mode = $mode == 'up' ? 'up -d' : 'down -v';
+
+        $upCommand = "docker-compose ~ {$mode}";
         $composeFiles = '-f ./.docker/docker-compose.yml';
 
         foreach ((array)$this->getAnswer('addons') as $addon) {
