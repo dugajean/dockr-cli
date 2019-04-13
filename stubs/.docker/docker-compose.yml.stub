@@ -10,8 +10,8 @@ services:
       image: mysql:5.7
       working_dir: /app
       volumes:
-        - .:/app
-        - ${PROJECT_NAME}-dbdata:/var/lib/mysql
+        - ../:/app
+        - temp-dbdata:/var/lib/mysql
       environment:
         - MYSQL_ROOT_PASSWORD=dev
         - MYSQL_DATABASE=dev
@@ -24,17 +24,17 @@ services:
     webserver:
       container_name: ${PROJECT_NAME}-webserver
       build:
-        context: .docker/${WEB_SERVER}
+        context: ${WEB_SERVER}
         args:
           - PROJECT_NAME
           - PROJECT_DOMAIN
           - PHP_VERSION
       environment:
         - PROJECT_DOMAIN
-        - PUBLIC_PATH
+        - WWW_PATH
       volumes:
-        - .:/app
-        - ./.docker/${WEB_SERVER}/default.conf:${WEB_SERVER_VHOST}
+        - ../:/app
+        - ./${WEB_SERVER}/default.conf:${WEB_SERVER_VHOST}
       ports:
        - "80:80"
        - "443:443"
@@ -43,19 +43,20 @@ services:
     php-fpm:
       container_name: ${PROJECT_NAME}-php-fpm
       build:
-        context: .docker/php-fpm
+        context: php-fpm
         args:
           - PHP_VERSION
           - PHP_EXTENSIONS
           - PHP_VERSION_X10
       volumes:
-        - .:/app
-        - ./.docker/php-fpm/php-ini-overrides.ini:/etc/php/${PHP_VERSION}/fpm/conf.d/99-overrides.ini
+        - ../:/app
+        - ./php-fpm/php-ini-overrides.ini:/etc/php/${PHP_VERSION}/fpm/conf.d/99-overrides.ini
       environment:
         - XDEBUG_CONFIG=remote_host=${HOST_HOSTNAME}
         - PHP_MAIL="${PHP_MAIL-/usr/sbin/sendmail -t -i}"
       restart: unless-stopped
 
 volumes:
-  ${PROJECT_NAME}-dbdata:
-
+  temp-dbdata:
+    name: ${PROJECT_NAME}-db
+    external: false

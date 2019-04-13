@@ -2,6 +2,8 @@
 
 namespace Dockr\Helpers;
 
+use Symfony\Component\Process\Process;
+
 /**
  * Convert case to studly.
  *
@@ -165,7 +167,7 @@ function ends_with($haystack, $needles)
  */
 function process($command, array $env = [])
 {
-    $process = \Symfony\Component\Process\Process::fromShellCommandline($command);
+    $process = (Process::fromShellCommandline($command))->setTty(Process::isTtySupported());
     $process->setTimeout(3600);
     $process->start(null, $env);
     $process->wait();

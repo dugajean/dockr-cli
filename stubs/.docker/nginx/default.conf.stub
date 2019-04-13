@@ -9,7 +9,7 @@ server {
     client_max_body_size 2508M;
     access_log /var/log/nginx/app.access.log;
 
-    root ${PUBLIC_PATH};
+    root /app/public;
     index index.php;
 
     if (!-e $request_filename) {
