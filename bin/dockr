@@ -29,7 +29,7 @@ if (!defined('DOCKR_COMPOSER_INSTALL')) {
 require DOCKR_COMPOSER_INSTALL;
 
 try {
-    (new \Dockr\App)->run();
+    pouch()->get('Dockr\App')->run();
 } catch (\Exception $e) {
     fwrite(STDERR, $e->getMessage() . PHP_EOL);
     exit(1);

@@ -1,7 +1,9 @@
 <?php
 
+use Dockr\App;
 use Pouch\Pouch;
 use Dockr\Config;
+use Dockr\Commands;
 use Humbug\SelfUpdate\Updater;
 use Dockr\Commands\AliasCommand;
 use Dockr\Events\EventSubscriber;
@@ -11,6 +13,7 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\CommandLoader\FactoryCommandLoader;
 
 $rootPath = __DIR__ . '/../';
@@ -18,19 +21,19 @@ $rootPath = __DIR__ . '/../';
 Pouch::bootstrap($rootPath);
 
 pouch()->bind([
-    'stubs_finder' => function () use ($rootPath) {
+    'StubsFinder' => function () use ($rootPath) {
         return (new Finder())->in($rootPath . 'stubs')->name('*.stub')->ignoreDotFiles(false);
     },
-    OutputInterface::class => pouch()->factory(function () {
+    OutputInterface::class => function () {
         return new ConsoleOutput;
-    }),
+    },
     Config::class => function () {
         return new Config;
     },
     Application::class => function () {
         return new Application('Dockr CLI', '@package_version@');
     },
-    EventDispatcher::class => function () {
+    EventDispatcherInterface::class => function () {
         return new EventDispatcher;
     },
     AliasCommand::class => function ($pouch) {
@@ -39,8 +42,16 @@ pouch()->bind([
         $commands = $config->get('aliases');
 
         foreach ((array)$commands as $alias => $commandList) {
-            $commandInstances[$alias] = function () use ($alias, $commandList) {
-                return (new AliasCommand($alias, $commandList))->getClass();
+            $commandInstances[$alias] = function () use ($alias, $commandList, $pouch) {
+                $aliasCommand = new AliasCommand(
+                    $alias,
+                    $commandList,
+                    $pouch->get(OutputInterface::class),
+                    $pouch->get(Config::class),
+                    new Dotenv
+                );
+
+                return $aliasCommand->getClass();
             };
         }
 
@@ -50,9 +61,9 @@ pouch()->bind([
         return new FactoryCommandLoader($pouch->get(AliasCommand::class));
     },
     EventSubscriber::class => function ($pouch) {
-        return new EventSubscriber($pouch->get(Config::class), $pouch->get(EventDispatcher::class));
+        return new EventSubscriber($pouch->get(Config::class), $pouch->get(EventDispatcherInterface::class));
     },
-    Updater::class => pouch()->factory(function () {
+    Updater::class => function () {
         $file = file_exists('bin/dockr.phar') ? 'bin/dockr.phar' : null;
 
         $updater = new Updater($file, false);
@@ -61,8 +72,26 @@ pouch()->bind([
         $updater->getStrategy()->setPharName('dockr.phar');
 
         return $updater;
-    }),
-    Dotenv::class => pouch()->factory(function () {
-       return new Dotenv;
-    }),
+    },
+    'CommandList' => function ($pouch) {
+        return [
+            new Commands\InitCommand($pouch->get('StubsFinder')),
+            new Commands\UpdateCommand,
+            new Commands\SwitchWebServerCommand,
+            new Commands\SwitchPhpVersionCommand,
+            new Commands\SwitchCacheStoreCommand,
+        ];
+    },
+    App::class => function ($pouch) {
+        return new App(
+            $pouch->get(Config::class),
+            $pouch->get(Application::class),
+            $pouch->get(EventSubscriber::class),
+            $pouch->get(EventDispatcherInterface::class),
+            $pouch->get(FactoryCommandLoader::class),
+            $pouch->get('CommandList')
+        );
+    },
 ]);
+
+unset($rootPath);

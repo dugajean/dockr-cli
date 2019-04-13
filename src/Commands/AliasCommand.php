@@ -43,24 +43,24 @@ final class AliasCommand
     /**
      * @var Dotenv
      */
-    private $dotEnv;
+    private $dotenv;
 
     /**
      * AliasParser constructor.
      *
-     * @param string       $name
-     * @param array|string $command
-     *
-     * @throws \Pouch\Exceptions\NotFoundException
-     * @throws \Pouch\Exceptions\PouchException
+     * @param string          $name
+     * @param array|string    $command
+     * @param OutputInterface $output
+     * @param Config          $config
+     * @param Dotenv          $dotenv
      */
-    public function __construct($name, $command)
+    public function __construct($name, $command, OutputInterface $output, Config $config, Dotenv $dotenv)
     {
         $this->name = $name;
-        $this->output = pouch()->get(OutputInterface::class);
+        $this->output = $output;
         $this->command = $this->prepareCommand($command);
-        $this->config = pouch()->get(Config::class);
-        $this->dotEnv = pouch()->get(Dotenv::class);
+        $this->config = $config;
+        $this->dotenv = $dotenv;
 
         $this->populateEnvironment();
     }
@@ -217,7 +217,7 @@ final class AliasCommand
         $dockerRoot .= array_key_exists('PUBLIC_PATH', $envData) ? add_slash($envData['PUBLIC_PATH']) : '/app/public';
         $envData['PUBLIC_PATH'] = $dockerRoot;
 
-        $this->dotEnv->populate($envData, true);
+        $this->dotenv->populate($envData, true);
     }
 
     /**
@@ -229,7 +229,7 @@ final class AliasCommand
     {
         $envFile = $this->config->get('environment-file') ?? '.env';
         if ($envFile && file_exists(current_path($envFile))) {
-            $this->dotEnv->load($envFile);
+            $this->dotenv->load($envFile);
         }
     }
 }

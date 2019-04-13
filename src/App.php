@@ -2,10 +2,9 @@
 
 namespace Dockr;
 
-use Dockr\Commands;
 use Dockr\Events\EventSubscriber;
 use Symfony\Component\Console\Application;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\CommandLoader\FactoryCommandLoader;
 
 final class App
@@ -21,7 +20,7 @@ final class App
     private $application;
 
     /**
-     * @var EventDispatcher
+     * @var EventDispatcherInterface
      */
     private $eventDispatcher;
 
@@ -36,35 +35,35 @@ final class App
     private $factoryCommandLoader;
 
     /**
-     * App constructor.
-     *
-     * @return void
-     * @throws \Pouch\Exceptions\NotFoundException
-     * @throws \Pouch\Exceptions\PouchException
+     * @var array
      */
-    public function __construct()
-    {
-        $this->config = pouch()->get(Config::class);
-        $this->application = pouch()->get(Application::class);
-        $this->eventSubscriber = pouch()->get(EventSubscriber::class);
-        $this->eventDispatcher = pouch()->get(EventDispatcher::class);
-        $this->factoryCommandLoader = pouch()->get(FactoryCommandLoader::class);
-    }
+    private $commandList;
 
     /**
-     * Register the main commands
+     * App constructor.
      *
-     * @return array
+     * @param Config                    $config
+     * @param Application               $app
+     * @param EventSubscriber           $eventSubscriber
+     * @param EventDispatcherInterface  $eventDispatcher
+     * @param FactoryCommandLoader      $factoryCommandLoader
+     * @param array                     $commandList
      */
-    private function commands()
+    public function __construct(
+        Config $config,
+        Application $app,
+        EventSubscriber $eventSubscriber,
+        EventDispatcherInterface $eventDispatcher,
+        FactoryCommandLoader $factoryCommandLoader,
+        array $commandList
+    )
     {
-        return [
-            new Commands\InitCommand,
-            new Commands\UpdateCommand,
-            new Commands\SwitchWebServerCommand,
-            new Commands\SwitchPhpVersionCommand,
-            new Commands\SwitchCacheStoreCommand,
-        ];
+        $this->config = $config;
+        $this->application = $app;
+        $this->eventSubscriber = $eventSubscriber;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->factoryCommandLoader = $factoryCommandLoader;
+        $this->commandList = $commandList;
     }
 
     /**
@@ -95,7 +94,7 @@ final class App
      */
     public function run()
     {
-        $this->application->addCommands($this->commands());
+        $this->application->addCommands($this->commandList);
         $this->loadCommandsFromConfig();
         $this->attachEventsDispatcher();
         $this->eventSubscriber->listen();

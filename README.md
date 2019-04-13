@@ -35,6 +35,23 @@ $ composer require dugajean/dockr-cli --dev
 $ vendor/bin/dockr --version
 ```
 
+## Usage
+
+Run the following command to initialize dockr:
+
+```bash
+$ dockr init
+```
+ 
+Open the newly created file `dockr.json` and read through it. Make sure everything is what you expect it to be. Then refer to the `aliases` section of the file. There you will see a couple of aliases preset for you: One will turn on the Docker containers and the other will shut them off.
+
+Use as follows:
+
+```bash
+$ dockr up
+$ dockr down
+```
+
 ## Testing
 
 ```bash

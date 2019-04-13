@@ -2,16 +2,42 @@
 
 namespace Dockr\Commands;
 
-use Dockr\Questions\ConfirmationQuestion;
 use Dockr\Questions\Question;
 use Dockr\Questions\ChoiceQuestion;
+use Symfony\Component\Finder\Finder;
+use Dockr\Questions\ConfirmationQuestion;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use function Dockr\Helpers\{comma_list, color, snake_case, starts_with, ends_with, current_path};
+
+use function Dockr\Helpers\{
+    comma_list,
+    color,
+    snake_case,
+    starts_with,
+    ends_with,
+    current_path
+};
 
 class InitCommand extends Command
 {
+    /**
+     * @var Finder
+     */
+    private $stubsFinder;
+
+    /**
+     * InitCommand constructor.
+     *
+     * @param Finder $stubsFinder
+     */
+    public function __construct(Finder $stubsFinder)
+    {
+        $this->stubsFinder = $stubsFinder;
+
+        parent::__construct(null);
+    }
+
     /**
      * Configure the command
      *
@@ -128,8 +154,6 @@ class InitCommand extends Command
      * Ask series of questions and store answers.
      *
      * @return void
-     * @throws \Pouch\Exceptions\NotFoundException
-     * @throws \Pouch\Exceptions\PouchException
      */
     protected function runWizard()
     {
@@ -321,15 +345,12 @@ class InitCommand extends Command
      * Question.
      *
      * @return void
-     * @throws \Pouch\Exceptions\NotFoundException
-     * @throws \Pouch\Exceptions\PouchException
      */
     protected function askOptionalAddons()
     {
         $addons = [];
-        $finder = pouch()->get('stubs_finder');
 
-        foreach ($finder as $file) {
+        foreach ($this->stubsFinder as $file) {
             $path = $file->getRelativePathname();
             if (starts_with($path, '.docker/') && ends_with($path, '.yml.stub')) {
                 $addons[] = str_replace(['.docker/docker-compose.', '.yml.stub'], '', $path);
@@ -363,14 +384,10 @@ class InitCommand extends Command
      * Prepare the stubs
      *
      * @return void
-     * @throws \Pouch\Exceptions\NotFoundException
-     * @throws \Pouch\Exceptions\PouchException
      */
     protected function copyStubs()
     {
-        $finder = pouch()->get('stubs_finder');
-
-        foreach ($finder as $file) {
+        foreach ($this->stubsFinder as $file) {
             $folderStructure = current_path($file->getRelativePath());
 
             if (!file_exists($folderStructure)) {
