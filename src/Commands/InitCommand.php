@@ -353,7 +353,13 @@ class InitCommand extends Command
         foreach ($this->stubsFinder as $file) {
             $path = $file->getRelativePathname();
             if (starts_with($path, '.docker/') && ends_with($path, '.yml.stub')) {
-                $addons[] = str_replace(['.docker/docker-compose.', '.yml.stub'], '', $path);
+                $addon = str_replace(['.docker/docker-compose.', '.yml.stub'], '', $path);
+
+                if ($addon == 'yml.stub') {
+                    continue;
+                }
+
+                $addons[] = $addon;
             }
         }
 
@@ -368,6 +374,10 @@ class InitCommand extends Command
 
     public function askUseDotenv()
     {
+        if (!file_exists('.env')) {
+            return;
+        }
+
         $question = (new ConfirmationQuestion(
             'We have detected the existence of a .env file in your project root. Use this file for your containers\' environment variables?: ',
             true
