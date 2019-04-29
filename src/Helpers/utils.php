@@ -170,7 +170,13 @@ function process($command, array $env = [])
     $process = (Process::fromShellCommandline($command))->setTty(Process::isTtySupported());
     $process->setTimeout(3600);
     $process->start(null, $env);
-    $process->wait();
+    $process->wait(function ($type, $buffer) {
+        if (Process::ERR === $type) {
+            echo 'ERR > '.$buffer;
+        } else {
+            echo 'OUT > '.$buffer;
+        }
+    });
 
     return $process->getOutput();
 }
