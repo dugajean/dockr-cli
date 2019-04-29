@@ -2,3 +2,6 @@ upload_max_filesize = 2500M
 post_max_size = 2508M
 xdebug.remote_enable = 1
 sendmail_path = ${PHP_MAIL}
+display_errors = On
+error_reporting = E_ALL
+memory_limit = 256M

@@ -2,9 +2,9 @@
     ServerName ${PROJECT_DOMAIN}
     ServerAlias www.${PROJECT_DOMAIN}
     ServerAdmin webmaster@localhost
-    DocumentRoot ${PUBLIC_PATH}
+    DocumentRoot /app/public
 
-    <Directory ${PUBLIC_PATH}>
+    <Directory /app/public>
         Options Indexes FollowSymLinks
         DirectoryIndex index.php
         AllowOverride All
@@ -25,9 +25,9 @@
     ServerName ${PROJECT_DOMAIN}
     ServerAlias www.${PROJECT_DOMAIN}
     ServerAdmin webmaster@localhost
-    DocumentRoot ${PUBLIC_PATH}
+    DocumentRoot /app/public
 
-    <Directory ${PUBLIC_PATH}>
+    <Directory /app/public>
         Options Indexes FollowSymLinks
         DirectoryIndex index.php
         AllowOverride All

@@ -467,7 +467,7 @@ class InitCommand extends Command
      */
     protected function upDownCommands($mode)
     {
-        $mode = $mode == 'up' ? 'up -d' : 'down -v';
+        $mode = $mode == 'up' ? 'up -d' : 'down';
 
         $upCommand = "docker-compose ~ {$mode}";
         $composeFiles = '-f ./.docker/docker-compose.yml';
