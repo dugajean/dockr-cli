@@ -212,7 +212,7 @@ class InitCommand extends Command
     {
         $defaultDomain = str_replace(' ', '-', strtolower($this->answers['projectName'])) . '.';
 
-        $this->answers['projectDomain'] = (new Question('Please enter the domain for the project: ', $defaultDomain . 'local'))
+        $this->answers['projectDomain'] = (new Question('Please enter the domain for the project: ', $defaultDomain . 'test'))
             ->setAutocomplete([$defaultDomain])
             ->render()
             ->outputAnswer()

@@ -52,7 +52,7 @@ services:
         - ../:/app
         - ./php-fpm/php-ini-overrides.ini:/etc/php/${PHP_VERSION}/fpm/conf.d/99-overrides.ini
       environment:
-        - XDEBUG_CONFIG=remote_host=${HOST_HOSTNAME}
+        - XDEBUG_CONFIG=remote_enable=1 remote_host=host.docker.internal idekey=VSCODE profiler_enable=0
         - PHP_MAIL="${PHP_MAIL-/usr/sbin/sendmail -t -i}"
       restart: unless-stopped
 
