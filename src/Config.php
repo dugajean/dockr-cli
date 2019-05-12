@@ -11,8 +11,10 @@ final class Config
 
     /**
      * Config's file name.
+     * 
+     * @var string
      */
-    const FILE = './dockr.json';
+    public $configFile = './dockr.json';
 
     /**
      * @var string
@@ -34,8 +36,8 @@ final class Config
      */
     public function __construct()
     {
-        if (file_exists(self::FILE)) {
-            $this->data = json_decode(file_get_contents(self::FILE), true);
+        if (file_exists($this->configFile)) {
+            $this->data = json_decode(file_get_contents($this->configFile), true);
         }
     }
 
@@ -53,7 +55,7 @@ final class Config
             $this->data[$dataOrKey] = $this->prepareValue($value);
         }
 
-         return (bool)file_put_contents(self::FILE, $this->makeJson());
+         return (bool)file_put_contents($this->configFile, $this->makeJson());
     }
 
     /**
@@ -84,6 +86,20 @@ final class Config
     public function exists()
     {
         return $this->data && count($this->data) > 0;
+    }
+
+    /**
+     * Sets the location of the dockr.json file. Defaults to ./dockr.json
+     *
+     * @param string $newConfig
+     *
+     * @return $this
+     */
+    public function setConfigFile($newConfig)
+    {
+        $this->configFile = $newConfig;
+
+        return $this;
     }
 
     /**

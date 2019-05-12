@@ -4,8 +4,10 @@ namespace Dockr;
 
 use Dockr\Events\EventSubscriber;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\CommandLoader\FactoryCommandLoader;
+use Dockr\Events\SetProjectPathEvent;
 
 final class App
 {
@@ -83,6 +85,8 @@ final class App
      */
     private function attachEventsDispatcher()
     {
+        (new SetProjectPathEvent($this->eventDispatcher, $this->config))->register();
+
         $this->application->setDispatcher($this->eventDispatcher);
     }
 
@@ -94,6 +98,12 @@ final class App
      */
     public function run()
     {
+        $definition = $this->application->getDefinition();
+        $optionDesc = 'Path to the project which holds dockr.json. Defaults to the currect directory.';
+        $definition->addOption(
+            new InputOption('project-path', null, InputOption::VALUE_REQUIRED, $optionDesc)
+        );
+
         $this->application->addCommands($this->commandList);
         $this->loadCommandsFromConfig();
         $this->attachEventsDispatcher();
