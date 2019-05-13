@@ -43,5 +43,8 @@
         "psr-4": {
             "Dockr\\Tests\\": "tests/PHPUnit"
         }
+    },
+    "scripts": {
+        "box": "box compile --no-restart"
     }
 }
