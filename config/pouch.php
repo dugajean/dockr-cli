@@ -22,22 +22,22 @@ $rootPath = __DIR__ . '/../';
 Pouch::bootstrap($rootPath);
 
 pouch()->bind([
-    'StubsFinder' => function () use ($rootPath) {
+    'StubsFinder' => function () use ($rootPath): Finder {
         return (new Finder())->in($rootPath . 'stubs')->name('*.stub')->ignoreDotFiles(false);
     },
-    OutputInterface::class => function () {
+    OutputInterface::class => function (): OutputInterface {
         return new ConsoleOutput;
     },
-    Config::class => function () {
+    Config::class => function (): Config {
         return new Config;
     },
-    Application::class => function () {
+    Application::class => function (): Application {
         return new Application('Dockr CLI', '@package_version@');
     },
-    EventDispatcherInterface::class => function () {
+    EventDispatcherInterface::class => function (): EventDispatcher {
         return new EventDispatcher;
     },
-    AliasCommand::class => function (ContainerInterface $pouch) {
+    AliasCommand::class => function (ContainerInterface $pouch): array {
         $commandInstances = [];
         $config = $pouch->get(Config::class);
         $commands = $config->get('aliases');
@@ -58,13 +58,13 @@ pouch()->bind([
 
         return $commandInstances;
     },
-    FactoryCommandLoader::class => function (ContainerInterface $pouch) {
+    FactoryCommandLoader::class => function (ContainerInterface $pouch): FactoryCommandLoader {
         return new FactoryCommandLoader($pouch->get(AliasCommand::class));
     },
-    EventSubscriber::class => function (ContainerInterface $pouch) {
+    EventSubscriber::class => function (ContainerInterface $pouch): EventSubscriber {
         return new EventSubscriber($pouch->get(Config::class), $pouch->get(EventDispatcherInterface::class));
     },
-    Updater::class => function () {
+    Updater::class => function (): Updater {
         $file = file_exists('bin/dockr.phar') ? 'bin/dockr.phar' : null;
 
         $updater = new Updater($file, false);
@@ -74,7 +74,7 @@ pouch()->bind([
 
         return $updater;
     },
-    'CommandList' => function (ContainerInterface $pouch) {
+    'CommandList' => function (ContainerInterface $pouch): array {
         return [
             new Commands\InitCommand($pouch->get('StubsFinder')),
             new Commands\UpdateCommand($pouch->get(Updater::class)),
@@ -83,7 +83,7 @@ pouch()->bind([
             new Commands\SwitchCacheStoreCommand,
         ];
     },
-    App::class => function (ContainerInterface $pouch) {
+    App::class => function (ContainerInterface $pouch): App {
         return new App(
             $pouch->get(Config::class),
             $pouch->get(Application::class),

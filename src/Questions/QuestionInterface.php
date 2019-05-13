@@ -16,7 +16,7 @@ interface QuestionInterface
     /**
      * Display the question to the user.
      *
-     * @return void
+     * @return self
      */
-    public function render(): void;
+    public function render(): Question;
 }

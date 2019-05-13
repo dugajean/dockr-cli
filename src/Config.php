@@ -67,7 +67,7 @@ final class Config
      *
      * @return string
      */
-    public function get(?string $key = null): string
+    public function get(?string $key = null): ?string
     {
         if (!$this->exists()) {
             return null;
