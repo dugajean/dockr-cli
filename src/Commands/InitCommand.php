@@ -33,7 +33,7 @@ class InitCommand extends Command
      *
      * @param Finder $stubsFinder
      */
-    public function __construct(Finder $stubsFinder)
+    public function __construct($stubsFinder)
     {
         $this->stubsFinder = $stubsFinder;
 

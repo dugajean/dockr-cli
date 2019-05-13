@@ -64,7 +64,7 @@ class Question implements QuestionInterface
      * @param string $question
      * @param mixed  $default
      */
-    public function __construct(string $question, bool $default = null)
+    public function __construct(string $question, $default = null)
     {
         $this->question = $question;
         $this->default = $default;

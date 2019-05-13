@@ -1,10 +1,8 @@
 <?php
 
-use Dockr\App;
 use Pouch\Pouch;
 use Dockr\Config;
 use Dockr\Commands;
-use Dockr\EventSubscriber;
 use Humbug\SelfUpdate\Updater;
 use Dockr\Commands\AliasCommand;
 use Symfony\Component\Dotenv\Dotenv;
@@ -22,14 +20,8 @@ $rootPath = __DIR__ . '/../';
 Pouch::bootstrap($rootPath);
 
 pouch()->bind([
-    'StubsFinder' => function () use ($rootPath): Finder {
-        return (new Finder())->in($rootPath . 'stubs')->name('*.stub')->ignoreDotFiles(false);
-    },
     OutputInterface::class => function (): OutputInterface {
         return new ConsoleOutput;
-    },
-    Config::class => function (): Config {
-        return new Config;
     },
     Application::class => function (): Application {
         return new Application('Dockr CLI', '@package_version@');
@@ -37,8 +29,26 @@ pouch()->bind([
     EventDispatcherInterface::class => function (): EventDispatcher {
         return new EventDispatcher;
     },
-    AliasCommand::class => function (ContainerInterface $pouch): array {
+    FactoryCommandLoader::class => function (ContainerInterface $pouch): FactoryCommandLoader {
+        return new FactoryCommandLoader($pouch->get('aliasCommands'));
+    },
+    Updater::class => function (): Updater {
+        $file = file_exists('bin/dockr.phar') ? 'bin/dockr.phar' : null;
+
+        $updater = new Updater($file, false);
+        $updater->setStrategy(Updater::STRATEGY_GITHUB);
+        $updater->getStrategy()->setPackageName('dugajean/dockr-cli');
+        $updater->getStrategy()->setPharName('dockr.phar');
+
+        return $updater;
+    },
+    'stubsFinder' => pouch()->named(function () use ($rootPath): Finder {
+        return (new Finder())->in($rootPath . 'stubs')->name('*.stub')->ignoreDotFiles(false);
+    }),
+    'aliasCommands' => pouch()->named(function (ContainerInterface $pouch): array {
+        
         $commandInstances = [];
+
         $config = $pouch->get(Config::class);
         $commands = $config->get('aliases');
 
@@ -57,42 +67,18 @@ pouch()->bind([
         }
 
         return $commandInstances;
-    },
-    FactoryCommandLoader::class => function (ContainerInterface $pouch): FactoryCommandLoader {
-        return new FactoryCommandLoader($pouch->get(AliasCommand::class));
-    },
-    EventSubscriber::class => function (ContainerInterface $pouch): EventSubscriber {
-        return new EventSubscriber($pouch->get(Config::class), $pouch->get(EventDispatcherInterface::class));
-    },
-    Updater::class => function (): Updater {
-        $file = file_exists('bin/dockr.phar') ? 'bin/dockr.phar' : null;
-
-        $updater = new Updater($file, false);
-        $updater->setStrategy(Updater::STRATEGY_GITHUB);
-        $updater->getStrategy()->setPackageName('dugajean/dockr-cli');
-        $updater->getStrategy()->setPharName('dockr.phar');
-
-        return $updater;
-    },
-    'CommandList' => function (ContainerInterface $pouch): array {
+    }),
+    'commands' => pouch()->named(function (ContainerInterface $pouch): array {
         return [
-            new Commands\InitCommand($pouch->get('StubsFinder')),
-            new Commands\UpdateCommand($pouch->get(Updater::class)),
-            new Commands\SwitchWebServerCommand,
-            new Commands\SwitchPhpVersionCommand,
-            new Commands\SwitchCacheStoreCommand,
+            $pouch->get(Commands\InitCommand::class)->getObject(),
+            $pouch->get(Commands\UpdateCommand::class)->getObject(),
+            $pouch->get(Commands\SwitchWebServerCommand::class)->getObject(),
+            $pouch->get(Commands\SwitchPhpVersionCommand::class)->getObject(),
+            $pouch->get(Commands\SwitchCacheStoreCommand::class)->getObject(),
         ];
-    },
-    App::class => function (ContainerInterface $pouch): App {
-        return new App(
-            $pouch->get(Config::class),
-            $pouch->get(Application::class),
-            $pouch->get(EventSubscriber::class),
-            $pouch->get(EventDispatcherInterface::class),
-            $pouch->get(FactoryCommandLoader::class),
-            $pouch->get('CommandList')
-        );
-    },
+    }),
 ]);
+
+pouch()->registerNamespaces('Dockr');
 
 unset($rootPath);

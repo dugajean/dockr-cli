@@ -61,7 +61,7 @@ final class App
         EventSubscriber $eventSubscriber,
         EventDispatcherInterface $eventDispatcher,
         FactoryCommandLoader $factoryCommandLoader,
-        array $commandList
+        array $commands
     )
     {
         $this->config = $config;
@@ -69,7 +69,7 @@ final class App
         $this->eventSubscriber = $eventSubscriber;
         $this->eventDispatcher = $eventDispatcher;
         $this->factoryCommandLoader = $factoryCommandLoader;
-        $this->commandList = $commandList;
+        $this->commandList = $commands;
     }
 
     /**

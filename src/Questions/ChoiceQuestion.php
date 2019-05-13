@@ -36,7 +36,7 @@ class ChoiceQuestion extends Question implements QuestionInterface
     public function __construct(
         string $question, 
         array $choices, 
-        bool $default = null, 
+        $default = null, 
         bool $multiChoice = false, 
         bool $allowEmpty = false
     )
