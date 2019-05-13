@@ -16,7 +16,7 @@ final class Config
      * 
      * @var string
      */
-    public $configFile = './dockr.json';
+    private $configFile = './dockr.json';
 
     /**
      * @var string
@@ -38,9 +38,7 @@ final class Config
      */
     public function __construct()
     {
-        if (file_exists($this->configFile)) {
-            $this->data = json_decode(file_get_contents($this->configFile), true);
-        }
+        $this->loadConfigFile();   
     }
 
     /**
@@ -101,7 +99,7 @@ final class Config
     {
         $this->configFile = $newConfig;
 
-        return $this;
+        return $this->loadConfigFile();
     }
 
     /**
@@ -132,5 +130,19 @@ final class Config
         }
 
         return $json;
+    }
+
+    /**
+     * Loads the config file (dockr.json).
+     *
+     * @return $this
+     */
+    private function loadConfigFile(): self
+    {
+        if (file_exists($this->configFile)) {
+            $this->data = json_decode(file_get_contents($this->configFile), true);
+        }
+
+        return $this;
     }
 }
