@@ -46,26 +46,30 @@ $ dockr init
  
 Open the newly created file `dockr.json` and read through it. Make sure everything is what you expect it to be. Then refer to the `aliases` section of the file. There you will see a couple of aliases preset for you: One will turn on the Docker containers and the other will shut them off.
 
-Use as follows:
+Use as follows: `$ dockr up` and `$ dockr down` respectively.
 
-```bash
-$ dockr up
+You can also set your own aliases there to control your setup. You can set aliases for SSH-ing into a container, delete the docker images or whatever you want. You can also point to a class which extends Symfony's `Command` class by providing the fully qualified namespace. 
 
-$ dockr down
-```
-
-You can also set your own aliases there to control your setup. You can set aliases for SSH-ing into a container, delete the images or whatever you want. You can also point to a class which extends Symfony's `Command` class by providing the fully qualified namespace. That would look like this:
+Examples:
 
 ```
 // ...
 
 "aliases": {
     // ...
-    "myalias": [
+    "ssh": {
+        "help": "SSH into a container.",
+        "commands": [
+            "docker-compose -f .docker/docker-compose.yml exec {container} bash"
+        ]
+    },
+    "mycmd": [
         "\\Fully\\Qualified\\Namespace\\To\\MyCommand"
     ]
 }
 ```
+
+Execute the commands like so: `$ dockr ssh php-fpm` and `$ dockr mycmd`.
 
 For a full list of available commands, run `dockr` and if you need help with a specific command run `dockr help <command>`.
 
