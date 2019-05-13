@@ -10,7 +10,7 @@ Easy Docker Compose setup for your LAMP and LEMP projects.
 ## Requirements
 
 - Docker & docker-compose
-- PHP 7+
+- PHP 7.1+
 - `ext-json`
 - `ext-ctype`
 
@@ -50,8 +50,24 @@ Use as follows:
 
 ```bash
 $ dockr up
+
 $ dockr down
 ```
+
+You can also set your own aliases there to control your setup. You can set aliases for SSH-ing into a container, delete the images or whatever you want. You can also point to a class which extends Symfony's `Command` class by providing the fully qualified namespace. That would look like this:
+
+```json
+// ...
+
+"aliases": {
+    // ...
+    "myalias": [
+        "\\Fully\\Qualified\\Namespace\\To\\MyCommand"
+    ]
+}
+```
+
+For a full list of available commands, run `dockr` and if you need help with a specific command run `dockr help <command>`.
 
 ## Testing
 
@@ -65,8 +81,3 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## License
 Pouch is released under [the MIT License](LICENSE).
-
-## Support on Beerpay
-Hey dude! Help me out for a couple of :beers:!
-
-[![Beerpay](https://beerpay.io/dugajean/dockr-cli/badge.svg?style=beer-square)](https://beerpay.io/dugajean/dockr-cli)  [![Beerpay](https://beerpay.io/dugajean/dockr-cli/make-wish.svg?style=flat-square)](https://beerpay.io/dugajean/dockr-cli?focus=wish)

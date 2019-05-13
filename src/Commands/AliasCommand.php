@@ -96,7 +96,17 @@ final class AliasCommand
     {
         return $this->commandType == self::TYPE_CLASS 
             ? $this->getCommand() 
-            : new class ($this) extends Command
+            : $this->anonymousCommand();
+    }
+
+    /**
+     * Fetch anonymous class to handle alias.
+     *
+     * @return \Symfony\Component\Console\Command\Command
+     */
+    private function anonymousCommand(): Command
+    {
+        return new class ($this) extends Command
         {
             /**
              * @var \Dockr\Commands\AliasCommand
