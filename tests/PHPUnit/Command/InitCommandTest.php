@@ -1,6 +1,6 @@
 <?php
 
-namespace Dockr\Tests\Command;
+namespace Dockr\Tests\PHPUnit\Command;
 
 use Dockr\Tests\TestCase;
 use Dockr\Commands\InitCommand;
@@ -12,7 +12,7 @@ class InitCommandTest extends TestCase
     public function testExecute()
     {
         $application = new Application();
-        $application->add(new InitCommand);
+        $application->add(new InitCommand(pouch()->get('StubsFinder')));
 
         $command = $application->find('init');
 

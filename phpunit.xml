@@ -10,7 +10,7 @@
          stopOnFailure="false">
     <testsuites>
         <testsuite name="Dockr CLI Tests">
-            <directory>./tests</directory>
+            <directory>./tests/PHPUnit</directory>
         </testsuite>
     </testsuites>
     <filter>

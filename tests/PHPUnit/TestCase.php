@@ -1,6 +1,6 @@
 <?php
 
-namespace Dockr\Tests;
+namespace Dockr\PHPUnit\Tests;
 
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamWrapper;
