@@ -56,7 +56,7 @@ $ dockr down
 
 You can also set your own aliases there to control your setup. You can set aliases for SSH-ing into a container, delete the images or whatever you want. You can also point to a class which extends Symfony's `Command` class by providing the fully qualified namespace. That would look like this:
 
-```json
+```
 // ...
 
 "aliases": {
