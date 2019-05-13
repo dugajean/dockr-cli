@@ -24,7 +24,7 @@ To download the latest release, head over to [Releases](https://github.com/dugaj
 $ dockr.phar --version
 ```
 
-Feel free to move this to `/usr/local/bin` and remove the `.phar` extension.
+Feel free to move this to `/usr/local/bin` so you can run it from anywhere: `$ mv ./dockr.phar /usr/local/bin/dockr`
 
 ###### Per project installation
 
