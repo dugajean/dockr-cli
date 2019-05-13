@@ -57,7 +57,7 @@ pouch()->bind([
                     $alias,
                     $commandList,
                     $pouch->get(OutputInterface::class),
-                    $pouch->get(Config::class),
+                    $pouch->get(Config::class)->getObject(),
                     new Dotenv
                 );
 
@@ -70,7 +70,7 @@ pouch()->bind([
     'commands' => pouch()->named(function (ContainerInterface $pouch): array {
         return [
             $pouch->get(Commands\InitCommand::class)->getObject(),
-            $pouch->get(Commands\UpdateCommand::class)->getObject(),
+            $pouch->get(Commands\SelfUpdateCommand::class)->getObject(),
             $pouch->get(Commands\SwitchWebServerCommand::class)->getObject(),
             $pouch->get(Commands\SwitchPhpVersionCommand::class)->getObject(),
             $pouch->get(Commands\SwitchCacheStoreCommand::class)->getObject(),
