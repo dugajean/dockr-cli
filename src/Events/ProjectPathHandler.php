@@ -1,19 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr\Events;
 
 use Dockr\Config;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class SetProjectPathEvent
+class ProjectPathHandler implements EventHandlerInterface
 {
-    /**
-     * @var EventDispatcher
-     */
-    protected $dispatcher;
-
     /**
      * @var Config
      */
@@ -22,26 +18,35 @@ class SetProjectPathEvent
     /**
      * SetProjectPathEvent constructor.
      */
-    public function __construct(EventDispatcherInterface $dispatcher, Config $config)
+    public function __construct(Config $config)
     {
-        $this->dispatcher = $dispatcher;
         $this->config = $config;
     }
 
     /**
-     * Handles this event
+     * The event name.
+     *
+     * @return string
+     */
+    public function onEvent(): string
+    {
+        return ConsoleEvents::COMMAND;
+    }
+
+    /**
+     * Handle this event.
      *
      * @return void
      */
-    public function register()
+    public function handler(): \Closure
     {
-        $this->dispatcher->addListener(ConsoleEvents::COMMAND, function (ConsoleCommandEvent $event) {
+        return function (ConsoleCommandEvent $event) {
 
             $input = $event->getInput();
 
             if ($input->hasOption('project-path') === true) {
                 $this->config->setConfigFile($input->getOption('project-path'));
             }
-        });
+        };
     }
 }

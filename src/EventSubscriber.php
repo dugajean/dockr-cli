@@ -1,6 +1,6 @@
 <?php
 
-namespace Dockr\Events;
+namespace Dockr;
 
 use Dockr\Config;
 use function Dockr\Helpers\{color, process};

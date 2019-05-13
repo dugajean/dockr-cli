@@ -2,12 +2,14 @@
 
 namespace Dockr;
 
-use Dockr\Events\EventSubscriber;
+use Dockr\EventSubscriber;
+use Dockr\Events\ProjectPathHandler;
+use Dockr\Events\EventHandlerInterface;
 use Symfony\Component\Console\Application;
+use Dockr\GlobalArguments\ProjectPathOption;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\CommandLoader\FactoryCommandLoader;
-use Dockr\Events\SetProjectPathEvent;
 
 final class App
 {
@@ -79,15 +81,39 @@ final class App
     }
 
     /**
+     * Registers handlers to the event dispatcher.
+     *
+     * @param \Dockr\Events\EventHandlerInterface $eventHandler
+     *
+     * @return void
+     */
+    private function addListener(EventHandlerInterface $eventHandler)
+    {
+        $this->eventDispatcher->addListener($eventHandler->onEvent(), $eventHandler->handler());
+    }
+
+    /**
      * Attach event dispatcher
      *
      * @return void
      */
     private function attachEventsDispatcher()
     {
-        (new SetProjectPathEvent($this->eventDispatcher, $this->config))->register();
+        $this->addListener(new ProjectPathHandler($this->config));
 
         $this->application->setDispatcher($this->eventDispatcher);
+    }
+
+    /**
+     * Register global arguments and options.
+     *
+     * @return void
+     */
+    private function registerGlobalArguments()
+    {
+        $definition = $this->application->getDefinition();
+
+        $definition->addOption((new ProjectPathOption)->getOption());
     }
 
     /**
@@ -98,12 +124,7 @@ final class App
      */
     public function run()
     {
-        $definition = $this->application->getDefinition();
-        $optionDesc = 'Path to the project which holds dockr.json. Defaults to the currect directory.';
-        $definition->addOption(
-            new InputOption('project-path', null, InputOption::VALUE_REQUIRED, $optionDesc)
-        );
-
+        $this->registerGlobalArguments();
         $this->application->addCommands($this->commandList);
         $this->loadCommandsFromConfig();
         $this->attachEventsDispatcher();

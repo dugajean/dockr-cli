@@ -4,18 +4,18 @@ use Dockr\App;
 use Pouch\Pouch;
 use Dockr\Config;
 use Dockr\Commands;
+use Dockr\EventSubscriber;
 use Humbug\SelfUpdate\Updater;
 use Dockr\Commands\AliasCommand;
-use Dockr\Events\EventSubscriber;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Finder\Finder;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\CommandLoader\FactoryCommandLoader;
-use Dockr\Events\SetProjectPathEvent;
 
 $rootPath = __DIR__ . '/../';
 
@@ -37,7 +37,7 @@ pouch()->bind([
     EventDispatcherInterface::class => function () {
         return new EventDispatcher;
     },
-    AliasCommand::class => function ($pouch) {
+    AliasCommand::class => function (ContainerInterface $pouch) {
         $commandInstances = [];
         $config = $pouch->get(Config::class);
         $commands = $config->get('aliases');
@@ -58,10 +58,10 @@ pouch()->bind([
 
         return $commandInstances;
     },
-    FactoryCommandLoader::class => function ($pouch) {
+    FactoryCommandLoader::class => function (ContainerInterface $pouch) {
         return new FactoryCommandLoader($pouch->get(AliasCommand::class));
     },
-    EventSubscriber::class => function ($pouch) {
+    EventSubscriber::class => function (ContainerInterface $pouch) {
         return new EventSubscriber($pouch->get(Config::class), $pouch->get(EventDispatcherInterface::class));
     },
     Updater::class => function () {
@@ -74,7 +74,7 @@ pouch()->bind([
 
         return $updater;
     },
-    'CommandList' => function ($pouch) {
+    'CommandList' => function (ContainerInterface $pouch) {
         return [
             new Commands\InitCommand($pouch->get('StubsFinder')),
             new Commands\UpdateCommand,
@@ -83,7 +83,7 @@ pouch()->bind([
             new Commands\SwitchCacheStoreCommand,
         ];
     },
-    App::class => function ($pouch) {
+    App::class => function (ContainerInterface $pouch) {
         return new App(
             $pouch->get(Config::class),
             $pouch->get(Application::class),

@@ -4,7 +4,6 @@ namespace Dockr\Commands;
 
 use Dockr\Config;
 use Dockr\Questions\Question;
-use Dockr\Events\EventSubscriber;
 use function Dockr\Helpers\camel_case;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,11 +30,6 @@ abstract class Command extends SymfonyCommand
      * @var Config
      */
     protected $config;
-
-    /**
-     * @var EventSubscriber
-     */
-    protected $eventSubscriber;
 
     /**
      * User's answers
