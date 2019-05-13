@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr;
 
 use Dockr\Config;
@@ -68,7 +70,7 @@ class EventSubscriber
      *
      * @return void
      */
-    public function listen($continueOnError = false)
+    public function listen(bool $continueOnError = false): void
     {
         foreach (self::EVENT_MAP as $event => $eventName) {
             $this->dispatcher->addListener(self::EVENT_MAP[$event], $this->eventHandler($event, $continueOnError));
@@ -83,7 +85,7 @@ class EventSubscriber
      *
      * @return \Closure
      */
-    protected function eventHandler($event, $continueOnError)
+    protected function eventHandler(string $event, bool $continueOnError): \Closure
     {
         return function (ConsoleEvent $e) use ($event, $continueOnError) {
             if (
@@ -130,7 +132,7 @@ class EventSubscriber
      *
      * @return bool
      */
-    protected function eventExists($event, $command)
+    protected function eventExists(string $event, string $command): bool
     {
         return array_key_exists($event . '-' . $command, $this->scripts);
     }

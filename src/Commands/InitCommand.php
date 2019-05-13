@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr\Commands;
 
 use Dockr\Questions\Question;
@@ -43,7 +45,7 @@ class InitCommand extends Command
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('init')
@@ -85,7 +87,7 @@ class InitCommand extends Command
      * @throws \Pouch\Exceptions\NotFoundException
      * @throws \Pouch\Exceptions\PouchException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         parent::execute($input, $output);
 
@@ -108,7 +110,7 @@ class InitCommand extends Command
      * @throws \Pouch\Exceptions\NotFoundException
      * @throws \Pouch\Exceptions\PouchException
      */
-    public function fetchAnswers()
+    public function fetchAnswers(): void
     {
         $name = $this->input->getOption('name');
         $domain = $this->input->getOption('domain');
@@ -130,7 +132,7 @@ class InitCommand extends Command
      *
      * @return void
      */
-    protected function fromOptions($name, $domain)
+    protected function fromOptions(string $name, string $domain): void
     {
         $webServer  = $this->input->getOption('webserver');
         $cacheStore = $this->input->getOption('cache');
@@ -155,7 +157,7 @@ class InitCommand extends Command
      *
      * @return void
      */
-    protected function runWizard()
+    protected function runWizard(): void
     {
         $this->greeting();
 
@@ -174,7 +176,7 @@ class InitCommand extends Command
      *
      * @return void
      */
-    protected function greeting()
+    protected function greeting(): void
     {
         $this->output->writeln('Welcome to');
         $this->output->writeln('
@@ -194,7 +196,7 @@ class InitCommand extends Command
      *
      * @return void
      */
-    protected function askProjectName()
+    protected function askProjectName(): void
     {
         $this->answers['projectName'] = (new Question('Please enter the name of the project: '))
             ->setValidators(['not_empty'])
@@ -208,7 +210,7 @@ class InitCommand extends Command
      *
      * @return void
      */
-    protected function askProjectDomain()
+    protected function askProjectDomain(): void
     {
         $defaultDomain = str_replace(' ', '-', strtolower($this->answers['projectName'])) . '.';
 
@@ -224,7 +226,7 @@ class InitCommand extends Command
      *
      * @return void
      */
-    protected function askWebServer()
+    protected function askWebServer(): void
     {
         $this->answers['webServer'] = (new ChoiceQuestion(
             'Please select the webserver you want your project to run on: ',
@@ -240,7 +242,7 @@ class InitCommand extends Command
      *
      * @return void
      */
-    protected function askCacheStore()
+    protected function askCacheStore(): void
     {
         $this->answers['cacheStore'] = (new ChoiceQuestion(
             'Please select the cache store you want your project to run on: ',
@@ -256,7 +258,7 @@ class InitCommand extends Command
      *
      * @return void
      */
-    protected function askPhpVersion()
+    protected function askPhpVersion(): void
     {
         $this->answers['phpVersion'] = (new ChoiceQuestion(
             'Please select the PHP version you want your project to run on',
@@ -272,7 +274,7 @@ class InitCommand extends Command
      *
      * @return void
      */
-    protected function askPhpExtensions()
+    protected function askPhpExtensions(): void
     {
         $phpExts = [
             'memcached' => 'php-memcached',
@@ -346,7 +348,7 @@ class InitCommand extends Command
      *
      * @return void
      */
-    protected function askOptionalAddons()
+    protected function askOptionalAddons(): void
     {
         $addons = [];
 
@@ -372,7 +374,7 @@ class InitCommand extends Command
             ->getAnswer();
     }
 
-    public function askUseDotenv()
+    public function askUseDotenv(): void
     {
         if (!file_exists('.env')) {
             return;
@@ -395,7 +397,7 @@ class InitCommand extends Command
      *
      * @return void
      */
-    protected function copyStubs()
+    protected function copyStubs(): void
     {
         foreach ($this->stubsFinder as $file) {
             $folderStructure = current_path($file->getRelativePath());
@@ -436,7 +438,7 @@ class InitCommand extends Command
      *
      * @return bool
      */
-    protected function storeConfig()
+    protected function storeConfig(): bool
     {
         $dockrJson = [];
 
@@ -465,7 +467,7 @@ class InitCommand extends Command
      *
      * @return string
      */
-    protected function upDownCommands($mode)
+    protected function upDownCommands(string $mode): string
     {
         $mode = $mode == 'up' ? 'up -d' : 'down';
 

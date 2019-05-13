@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr\Questions;
 
 interface QuestionInterface
@@ -16,5 +18,5 @@ interface QuestionInterface
      *
      * @return void
      */
-    public function render();
+    public function render(): void;
 }

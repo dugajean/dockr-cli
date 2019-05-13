@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr\Commands;
 
 use Dockr\Config;
@@ -70,7 +72,7 @@ final class AliasCommand
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -78,7 +80,7 @@ final class AliasCommand
     /**
      * Commands getter.
      *
-     * @return \stdClass
+     * @return \stdClass|\Symfony\Component\Console\Command\Command
      */
     public function getCommand()
     {
@@ -92,7 +94,9 @@ final class AliasCommand
      */
     public function getClass()
     {
-        return $this->commandType == self::TYPE_CLASS ? $this->getCommand() : new class ($this) extends Command
+        return $this->commandType == self::TYPE_CLASS 
+            ? $this->getCommand() 
+            : new class ($this) extends Command
         {
             /**
              * @var \Dockr\Commands\AliasCommand
@@ -109,13 +113,14 @@ final class AliasCommand
             public function __construct(AliasCommand $alias)
             {
                 $this->alias = $alias;
+
                 parent::__construct($this->alias->getName());
             }
 
             /**
              * @inheritdoc
              */
-            protected function configure()
+            protected function configure(): void
             {
                 $commandList = $this->alias->getCommand();
 
@@ -130,7 +135,7 @@ final class AliasCommand
             /**
              * @inheritdoc
              */
-            protected function execute(InputInterface $input, OutputInterface $output)
+            protected function execute(InputInterface $input, OutputInterface $output): void
             {
                 foreach ($this->alias->getCommand() as $command) {
                     $commandStr = $command->body;
@@ -165,6 +170,7 @@ final class AliasCommand
                 preg_match_all('~\{([^}]*)\}~', $item, $matches);
                 $object->arguments = $matches[1];
                 $object->help = $helpTxt;
+
                 return $object;
             }, $cmdList);
 
@@ -188,7 +194,7 @@ final class AliasCommand
      *
      * @return void
      */
-    private function populateEnvironment()
+    private function populateEnvironment(): void
     {
         $this->mainEnv();
         $this->fileEnv();
@@ -199,7 +205,7 @@ final class AliasCommand
      *
      * @return void
      */
-    private function mainEnv()
+    private function mainEnv(): void
     {
         foreach (Config::STRUCTURE as $configKey) {
             if ($val = $this->config->get($configKey)) {
@@ -225,7 +231,7 @@ final class AliasCommand
      *
      * @return void
      */
-    private function fileEnv()
+    private function fileEnv(): void
     {
         $envFile = $this->config->get('environment-file') ?? '.env';
         if ($envFile && file_exists(current_path($envFile))) {

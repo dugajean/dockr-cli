@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr\Commands;
 
 use function Dockr\Helpers\comma_list;
@@ -12,7 +14,7 @@ class SwitchCacheStoreCommand extends SwitchCommand
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $options = comma_list(self::getChoices());
 
@@ -28,7 +30,7 @@ class SwitchCacheStoreCommand extends SwitchCommand
      *
      * @return array
      */
-    public static function getChoices()
+    public static function getChoices(): array
     {
         return ['redis', 'memcached'];
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr\Questions;
 
 use Dockr\Validators\ValidatorInterface;
@@ -62,7 +64,7 @@ class Question implements QuestionInterface
      * @param string $question
      * @param mixed  $default
      */
-    public function __construct($question, $default = null)
+    public function __construct(string $question, bool $default = null)
     {
         $this->question = $question;
         $this->default = $default;
@@ -75,7 +77,7 @@ class Question implements QuestionInterface
      *
      * @return $this
      */
-    public function render()
+    public function render(): self
     {
         $question = new SymfonyQuestion($this->question, $this->default);
 
@@ -106,7 +108,7 @@ class Question implements QuestionInterface
      *
      * @return $this
      */
-    public function outputAnswer()
+    public function outputAnswer(): self
     {
         $answer = $this->getAnswer();
         $answer = is_array($answer) ? comma_list($answer) : $answer;
@@ -125,7 +127,7 @@ class Question implements QuestionInterface
      *
      * @return $this
      */
-    public function adjustAnswer(\Closure $closure)
+    public function adjustAnswer(\Closure $closure): self
     {
         $this->answerCallback = $closure;
 
@@ -153,7 +155,7 @@ class Question implements QuestionInterface
      *
      * @return void
      */
-    protected function includeDefault()
+    protected function includeDefault(): void
     {
         if ($this->default === null) {
             return;
@@ -173,7 +175,7 @@ class Question implements QuestionInterface
      *
      * @return $this
      */
-    public function setValidators(array $validators)
+    public function setValidators(array $validators): self
     {
         $this->validators = $validators;
 
@@ -187,7 +189,7 @@ class Question implements QuestionInterface
      *
      * @return $this
      */
-    public function setAutocomplete(array $autocomplete)
+    public function setAutocomplete(array $autocomplete): self
     {
         $this->autocompleteValues = $autocomplete;
 
@@ -198,8 +200,10 @@ class Question implements QuestionInterface
      * Include the validators to the question.
      *
      * @param SymfonyQuestion $question
+     * 
+     * @return void
      */
-    protected function includeValidators(SymfonyQuestion $question)
+    protected function includeValidators(SymfonyQuestion $question): void
     {
         if (!$this->validators) {
             return;
@@ -221,8 +225,10 @@ class Question implements QuestionInterface
      * Include autocomplete values.
      *
      * @param SymfonyQuestion $question
+     * 
+     * @return void
      */
-    protected function includeAutocomplete(SymfonyQuestion $question)
+    protected function includeAutocomplete(SymfonyQuestion $question): void
     {
         if ($this->autocompleteValues) {
             $question->setAutocompleterValues($this->autocompleteValues);
@@ -233,8 +239,10 @@ class Question implements QuestionInterface
      * @param InputInterface   $input
      * @param OutputInterface  $output
      * @param QuestionHelper   $helper
+     * 
+     * @return void
      */
-    public static function setIO(InputInterface $input, OutputInterface $output, QuestionHelper $helper)
+    public static function setIO(InputInterface $input, OutputInterface $output, QuestionHelper $helper): void
     {
         self::$input = $input;
         self::$output = $output;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr\Commands;
 
 use Dockr\Config;
@@ -57,7 +59,7 @@ abstract class Command extends SymfonyCommand
      * @param InputInterface  $input
      * @param OutputInterface $output
      */
-    protected function init(InputInterface $input, OutputInterface $output)
+    protected function init(InputInterface $input, OutputInterface $output): void
     {
         $this->input = $input;
         $this->output = $output;
@@ -73,7 +75,7 @@ abstract class Command extends SymfonyCommand
      * @throws \Pouch\Exceptions\NotFoundException
      * @throws \Pouch\Exceptions\PouchException
      */
-    protected function loadConfig()
+    protected function loadConfig(): void
     {
         $this->config = pouch()->get(Config::class);
         $configData = $this->config->get();

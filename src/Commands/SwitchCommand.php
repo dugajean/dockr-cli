@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr\Commands;
 
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,7 +35,7 @@ abstract class SwitchCommand extends Command
      *
      * @return array
      */
-    abstract public static function getChoices();
+    abstract public static function getChoices(): array;
 
     /**
      * @param InputInterface   $input
@@ -66,7 +68,7 @@ abstract class SwitchCommand extends Command
      *
      * @return $this
      */
-    public function validate()
+    public function validate(): self
     {
         $currentProp = snake_case($this->currentProp, ' ');
 
@@ -86,7 +88,7 @@ abstract class SwitchCommand extends Command
      *
      * @return string
      */
-    protected function getSwitchProperty()
+    protected function getSwitchProperty(): string
     {
         $prop = str_replace('Switch', '', class_basename(static::class));
         $prop = str_replace('Command', '', $prop);
@@ -99,7 +101,7 @@ abstract class SwitchCommand extends Command
      *
      * @return string
      */
-    public function getArgument()
+    public function getArgument(): string
     {
         return $this->argument;
     }

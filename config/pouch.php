@@ -77,7 +77,7 @@ pouch()->bind([
     'CommandList' => function (ContainerInterface $pouch) {
         return [
             new Commands\InitCommand($pouch->get('StubsFinder')),
-            new Commands\UpdateCommand,
+            new Commands\UpdateCommand($pouch->get(Updater::class)),
             new Commands\SwitchWebServerCommand,
             new Commands\SwitchPhpVersionCommand,
             new Commands\SwitchCacheStoreCommand,

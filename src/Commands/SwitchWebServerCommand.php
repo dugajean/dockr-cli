@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr\Commands;
 
 use function Dockr\Helpers\comma_list;
@@ -15,7 +17,7 @@ class SwitchWebServerCommand extends SwitchCommand
      *
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $options = comma_list(self::getChoices());
 
@@ -33,7 +35,7 @@ class SwitchWebServerCommand extends SwitchCommand
      *
      * @return string
      */
-    public static function getConf($webServer)
+    public static function getConf(string $webServer): string
     {
         $constant = 'self::' . strtoupper($webServer) . '_CONF';
 
@@ -45,7 +47,7 @@ class SwitchWebServerCommand extends SwitchCommand
      *
      * @return array
      */
-    public static function getChoices()
+    public static function getChoices(): array
     {
         return ['apache', 'nginx'];
     }

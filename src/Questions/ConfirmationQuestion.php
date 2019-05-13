@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr\Questions;
 
 use Symfony\Component\Console\Question\ConfirmationQuestion as SymfonyConfirmationQuestion;
@@ -11,7 +13,7 @@ class ConfirmationQuestion extends Question implements QuestionInterface
      *
      * @return \Dockr\Questions\Question
      */
-    public function render()
+    public function render(): self
     {
         $question = new SymfonyConfirmationQuestion($this->question, $this->default);
 
@@ -27,7 +29,7 @@ class ConfirmationQuestion extends Question implements QuestionInterface
      *
      * @return void
      */
-    protected function includeDefault()
+    protected function includeDefault(): void
     {
         if ($this->default === null) {
             return;

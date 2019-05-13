@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr;
 
 use Dockr\EventSubscriber;
@@ -75,7 +77,7 @@ final class App
      *
      * @return void
      */
-    private function loadCommandsFromConfig()
+    private function loadCommandsFromConfig(): void
     {
         $this->application->setCommandLoader($this->factoryCommandLoader);
     }
@@ -87,7 +89,7 @@ final class App
      *
      * @return void
      */
-    private function addListener(EventHandlerInterface $eventHandler)
+    private function addListener(EventHandlerInterface $eventHandler): void
     {
         $this->eventDispatcher->addListener($eventHandler->onEvent(), $eventHandler->handler());
     }
@@ -97,7 +99,7 @@ final class App
      *
      * @return void
      */
-    private function attachEventsDispatcher()
+    private function attachEventsDispatcher(): void
     {
         $this->addListener(new ProjectPathHandler($this->config));
 
@@ -109,7 +111,7 @@ final class App
      *
      * @return void
      */
-    private function registerGlobalArguments()
+    private function registerGlobalArguments(): void
     {
         $definition = $this->application->getDefinition();
 
@@ -122,7 +124,7 @@ final class App
      * @return void
      * @throws \Exception
      */
-    public function run()
+    public function run(): void
     {
         $this->registerGlobalArguments();
         $this->application->addCommands($this->commandList);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr\Helpers;
 
 use Symfony\Component\Process\Process;
@@ -11,7 +13,7 @@ use Symfony\Component\Process\Process;
  *
  * @return string
  */
-function studly_case($str)
+function studly_case(string $str): string
 {
     return str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $str)));
 }
@@ -23,7 +25,7 @@ function studly_case($str)
  *
  * @return string
  */
-function camel_case($str)
+function camel_case(string $str): string
 {
     return lcfirst(studly_case($str));
 }
@@ -36,7 +38,7 @@ function camel_case($str)
  *
  * @return string
  */
-function snake_case($str, $delimiter = '_')
+function snake_case(string $str, string $delimiter = '_'): string
 {
     if (!ctype_lower($str)) {
         $str = strtolower(preg_replace('/(.)(?=[A-Z])/', '$1' . $delimiter, $str));
@@ -52,7 +54,7 @@ function snake_case($str, $delimiter = '_')
  *
  * @return string
  */
-function current_path($path)
+function current_path(string $path): string
 {
     return './' . $path;
 }
@@ -63,9 +65,10 @@ function current_path($path)
  * @param  string|object  $class
  * @return string
  */
-function class_basename($class)
+function class_basename($class): string
 {
     $class = is_object($class) ? get_class($class) : $class;
+
     return basename(str_replace('\\', '/', $class));
 }
 
@@ -78,7 +81,7 @@ function class_basename($class)
  *
  * @return string
  */
-function color($mode, $str, $padded = false)
+function color(string $mode, string $str, bool $padded = false): string
 {
     if ($padded) {
         $padding = str_repeat(' ', strlen($str) + 4);
@@ -113,7 +116,7 @@ function color($mode, $str, $padded = false)
  *
  * @return string
  */
-function comma_list(array $array)
+function comma_list(array $array): string
 {
     return implode(', ', $array);
 }
@@ -126,9 +129,9 @@ function comma_list(array $array)
  *
  * @return bool
  */
-function starts_with($haystack, $needles)
+function starts_with(string $haystack, $needles): bool
 {
-    foreach ((array) $needles as $needle)
+    foreach ((array)$needles as $needle)
     {
         if ($needle != '' && strpos($haystack, $needle) === 0) {
             return true;
@@ -146,7 +149,7 @@ function starts_with($haystack, $needles)
  *
  * @return bool
  */
-function ends_with($haystack, $needles)
+function ends_with(string $haystack, $needles): bool
 {
     foreach ((array) $needles as $needle) {
         if ((string) $needle === substr($haystack, -strlen($needle))) {
@@ -165,7 +168,7 @@ function ends_with($haystack, $needles)
  *
  * @return string
  */
-function process($command, array $env = [])
+function process(string $command, array $env = []): string
 {
     $process = (Process::fromShellCommandline($command))->setTty(Process::isTtySupported());
     $process->setTimeout(3600);
@@ -187,7 +190,7 @@ function process($command, array $env = [])
  * @param  array  $array
  * @return array
  */
-function array_flatten(array $array)
+function array_flatten(array $array): array
 {
     $return = [];
     array_walk_recursive($array, function($x) use (&$return) { $return[] = $x; });
@@ -202,7 +205,7 @@ function array_flatten(array $array)
  *
  * @return bool
  */
-function is_assoc(array $array)
+function is_assoc(array $array): bool
 {
     return count(array_filter(array_keys($array), 'is_string')) > 0;
 }
@@ -214,7 +217,7 @@ function is_assoc(array $array)
  *
  * @return string
  */
-function add_slash($str)
+function add_slash(string $str): string
 {
     return (!starts_with($str, '/') ? '/' : '') . (string)$str;
 }

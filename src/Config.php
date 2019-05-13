@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr;
 
 final class Config
@@ -47,7 +49,7 @@ final class Config
      *
      * @return bool
      */
-    public function set($dataOrKey = null, $value = null)
+    public function set($dataOrKey = null, ?string $value = null): bool
     {
         if (is_array($dataOrKey)) {
             $this->data = $dataOrKey;
@@ -65,7 +67,7 @@ final class Config
      *
      * @return string
      */
-    public function get($key = null)
+    public function get(?string $key = null): string
     {
         if (!$this->exists()) {
             return null;
@@ -83,7 +85,7 @@ final class Config
      *
      * @return bool
      */
-    public function exists()
+    public function exists(): bool
     {
         return $this->data && count($this->data) > 0;
     }
@@ -95,7 +97,7 @@ final class Config
      *
      * @return $this
      */
-    public function setConfigFile($newConfig)
+    public function setConfigFile(string $newConfig): self
     {
         $this->configFile = $newConfig;
 
@@ -105,11 +107,11 @@ final class Config
     /**
      * Prepares the value for storing.
      *
-     * @param $value
+     * @param string $value
      *
      * @return string
      */
-    private function prepareValue($value)
+    private function prepareValue(string $value): string
     {
         $this->jsonArray = str_replace("\n", "\n\t", json_encode($value, JSON_PRETTY_PRINT));
 

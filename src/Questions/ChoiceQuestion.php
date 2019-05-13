@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr\Questions;
 
 use Symfony\Component\Console\Question\Question as SymfonyQuestion;
@@ -31,7 +33,13 @@ class ChoiceQuestion extends Question implements QuestionInterface
      * @param bool   $multiChoice
      * @param bool   $allowEmpty
      */
-    public function __construct($question, array $choices, $default = null, $multiChoice = false, $allowEmpty = false)
+    public function __construct(
+        string $question, 
+        array $choices, 
+        bool $default = null, 
+        bool $multiChoice = false, 
+        bool $allowEmpty = false
+    )
     {
         if ($allowEmpty) {
             array_unshift($choices, 'None');
@@ -49,7 +57,7 @@ class ChoiceQuestion extends Question implements QuestionInterface
      *
      * @return \Dockr\Questions\Question
      */
-    public function render()
+    public function render(): self
     {
         $question = new SymfonyChoiceQuestion($this->question, $this->choices, $this->default);
 
@@ -83,7 +91,7 @@ class ChoiceQuestion extends Question implements QuestionInterface
      *
      * @return void
      */
-    protected function includeDefault()
+    protected function includeDefault(): void
     {
         if ($this->default !== null) {
             $this->default = $this->choices[$this->default];

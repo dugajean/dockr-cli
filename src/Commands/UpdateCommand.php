@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dockr\Commands;
 
 use Humbug\SelfUpdate\Updater;
@@ -18,17 +20,17 @@ final class UpdateCommand extends Command
     /**
      * @inheritdoc
      */
-    public function __construct()
+    public function __construct(Updater $updater)
     {
         parent::__construct();
 
-        $this->updater = pouch()->get(Updater::class);
+        $this->updater = $updater;
     }
 
     /**
      * @inheritdoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('update')
@@ -38,7 +40,7 @@ final class UpdateCommand extends Command
     /**
      * @inheritdoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $result = $this->updater->update();
 
