@@ -1,5 +1,5 @@
 vendor/
-docker.json
-docker-compose.yml
 dockr.json
+docker-compose.yml
 bin/dockr.phar
+/.docker/
