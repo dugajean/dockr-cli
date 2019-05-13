@@ -69,9 +69,9 @@ Examples:
 }
 ```
 
-Execute the commands like so: `$ dockr ssh php-fpm` and `$ dockr mycmd`.
+Execute the commands like so: `$ dockr ssh php-fpm` and `$ dockr mycmd`. As you can see, you can provide arguments to your custom commands.
 
-For a full list of available commands, run `dockr` and if you need help with a specific command run `dockr help <command>`.
+For a full list of available commands, run `$ dockr` and if you need help with a specific command run `$ dockr help <command>`.
 
 ## Testing
 
