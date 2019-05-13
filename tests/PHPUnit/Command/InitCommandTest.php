@@ -1,6 +1,6 @@
 <?php
 
-namespace Dockr\Tests\PHPUnit\Command;
+namespace Dockr\Tests\Command;
 
 use Dockr\Tests\TestCase;
 use Dockr\Commands\InitCommand;
