@@ -16,7 +16,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\CommandLoader\FactoryCommandLoader;
 
 $rootPath = __DIR__ . '/../';
-
 Pouch::bootstrap($rootPath);
 
 pouch()->bind([

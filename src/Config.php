@@ -18,7 +18,7 @@ final class Config
      * 
      * @var string
      */
-    private $configFile = './dockr.json';
+    private $configFile;
 
     /**
      * @var string
@@ -40,6 +40,8 @@ final class Config
      */
     public function __construct()
     {
+        $this->configFile = getcwd() . DIRECTORY_SEPARATOR . 'dockr.json';
+
         $this->loadConfigFile();   
     }
 

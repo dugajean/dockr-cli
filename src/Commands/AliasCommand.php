@@ -244,6 +244,7 @@ final class AliasCommand
     private function fileEnv(): void
     {
         $envFile = $this->config->get('environment-file') ?? '.env';
+        
         if ($envFile && file_exists(current_path($envFile))) {
             $this->dotenv->load($envFile);
         }

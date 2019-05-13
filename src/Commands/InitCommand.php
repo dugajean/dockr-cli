@@ -405,7 +405,7 @@ class InitCommand extends Command
             $folderStructure = current_path($file->getRelativePath());
 
             if (!file_exists($folderStructure)) {
-                mkdir($folderStructure, 0777, true);
+                @mkdir($folderStructure, 0777, true);
             }
 
             $fileName = current_path(str_replace('.stub', '', $file->getRelativePathname()));
