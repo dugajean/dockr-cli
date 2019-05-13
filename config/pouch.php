@@ -52,12 +52,12 @@ pouch()->bind([
         $commands = $config->get('aliases');
 
         foreach ((array)$commands as $alias => $commandList) {
-            $commandInstances[$alias] = function () use ($alias, $commandList, $pouch) {
+            $commandInstances[$alias] = function () use ($alias, $commandList, $pouch, $config) {
                 $aliasCommand = new AliasCommand(
                     $alias,
                     $commandList,
                     $pouch->get(OutputInterface::class),
-                    $pouch->get(Config::class)->getObject(),
+                    $config->getObject(),
                     new Dotenv
                 );
 

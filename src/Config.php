@@ -40,7 +40,7 @@ final class Config
      */
     public function __construct()
     {
-        $this->configFile = getcwd() . DIRECTORY_SEPARATOR . 'dockr.json';
+        // $this->configFile = getcwd() . DIRECTORY_SEPARATOR . 'dockr.json';
 
         $this->loadConfigFile();   
     }

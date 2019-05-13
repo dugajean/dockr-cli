@@ -9,7 +9,6 @@ use Dockr\Events\ProjectPathHandler;
 use Dockr\Events\EventHandlerInterface;
 use Symfony\Component\Console\Application;
 use Dockr\GlobalArguments\ProjectPathOption;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\CommandLoader\FactoryCommandLoader;
 
@@ -73,35 +72,17 @@ final class App
     }
 
     /**
-     * Register commands declared in config.
-     *
-     * @return void
-     */
-    private function loadCommandsFromConfig(): void
-    {
-        $this->application->setCommandLoader($this->factoryCommandLoader);
-    }
-
-    /**
-     * Registers handlers to the event dispatcher.
-     *
-     * @param \Dockr\Events\EventHandlerInterface $eventHandler
-     *
-     * @return void
-     */
-    private function addListener(EventHandlerInterface $eventHandler): void
-    {
-        $this->eventDispatcher->addListener($eventHandler->onEvent(), $eventHandler->handler());
-    }
-
-    /**
      * Attach event dispatcher
      *
      * @return void
      */
     private function attachEventsDispatcher(): void
     {
-        $this->addListener(new ProjectPathHandler($this->config));
+        $addListener = function (EventHandlerInterface $eventHandler): void {
+            $this->eventDispatcher->addListener($eventHandler->onEvent(), $eventHandler->handler());
+        };
+
+        $addListener(new ProjectPathHandler($this->config));
 
         $this->application->setDispatcher($this->eventDispatcher);
     }
@@ -126,10 +107,10 @@ final class App
      */
     public function run(): void
     {
+        $this->attachEventsDispatcher();
         $this->registerGlobalArguments();
         $this->application->addCommands($this->commandList);
-        $this->loadCommandsFromConfig();
-        $this->attachEventsDispatcher();
+        $this->application->setCommandLoader($this->factoryCommandLoader);
         $this->eventSubscriber->listen();
 
         $this->application->run();
