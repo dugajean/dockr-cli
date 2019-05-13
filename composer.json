@@ -15,7 +15,7 @@
         "bin/dockr"
     ],
     "require": {
-        "php": "^7",
+        "php": "~7.1",
         "ext-json": "*",
         "ext-ctype": "*",
         "symfony/console": "^4.2",

@@ -381,7 +381,8 @@ class InitCommand extends Command
         }
 
         $question = (new ConfirmationQuestion(
-            'We have detected the existence of a .env file in your project root. Use this file for your containers\' environment variables?: ',
+            'We have detected the existence of a .env file in your project root. 
+            Use this file for your containers\' environment variables?: ',
             true
         ))->render();
 
@@ -418,7 +419,7 @@ class InitCommand extends Command
      *
      * @return array|string
      */
-    protected function getAnswer($key)
+    protected function getAnswer(string $key)
     {
         if (!array_key_exists($key, $this->answers)) {
             throw new \RuntimeException('Cannot find this answer in the answers list.');

@@ -2,4 +2,5 @@ vendor/
 dockr.json
 docker-compose.yml
 bin/dockr.phar
+bin/dockr-old.phar
 /.docker/

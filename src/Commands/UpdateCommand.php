@@ -45,9 +45,8 @@ final class UpdateCommand extends Command
         $result = $this->updater->update();
 
         if ($result) {
-            $output->writeln(
-                color('green', "Dockr has been updated from '{$this->updater->getOldVersion()}' to '{$this->updater->getNewVersion()}'.")
-            );
+            $message = "Dockr has been updated from '{$this->updater->getOldVersion()}' to '{$this->updater->getNewVersion()}'.";
+            $output->writeln(color('green', $message));
         } else {
             $output->writeln(color('green', 'Dockr is already up to date.'));
         }
