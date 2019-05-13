@@ -77,7 +77,7 @@ class Question implements QuestionInterface
      *
      * @return $this
      */
-    public function render(): self
+    public function render()
     {
         $question = new SymfonyQuestion($this->question, $this->default);
 

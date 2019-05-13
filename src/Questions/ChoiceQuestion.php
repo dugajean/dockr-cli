@@ -57,7 +57,7 @@ class ChoiceQuestion extends Question implements QuestionInterface
      *
      * @return \Dockr\Questions\Question
      */
-    public function render(): self
+    public function render()
     {
         $question = new SymfonyChoiceQuestion($this->question, $this->choices, $this->default);
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dockr;
 
+use function Dockr\Helpers\{ends_with, expand_tilde};
+
 final class Config
 {
     /**
@@ -55,7 +57,7 @@ final class Config
             $this->data[$dataOrKey] = $this->prepareValue($value);
         }
 
-         return (bool)file_put_contents($this->configFile, $this->makeJson());
+         return (bool)@file_put_contents($this->configFile, $this->makeJson());
     }
 
     /**
@@ -65,7 +67,7 @@ final class Config
      *
      * @return string
      */
-    public function get(?string $key = null): ?string
+    public function get(?string $key = null)
     {
         if (!$this->exists()) {
             return null;
@@ -89,15 +91,28 @@ final class Config
     }
 
     /**
+     * Getter for configFile.
+     *
+     * @return string
+     */
+    public function getConfigFile(): string
+    {
+        return $this->configFile;
+    }
+
+    /**
      * Sets the location of the dockr.json file. Defaults to ./dockr.json
      *
-     * @param string $newConfig
+     * @param string $newPath, string $name = 'dockr.json'
      *
      * @return $this
      */
-    public function setConfigFile(string $newConfig): self
+    public function setConfigFile(string $newPath, string $name = 'dockr.json'): self
     {
-        $this->configFile = $newConfig;
+        $setSlashes = (!ends_with($newPath, DIRECTORY_SEPARATOR) ? DIRECTORY_SEPARATOR : '');
+        $configFile = $newPath . $setSlashes . $name;
+
+        $this->configFile = expand_tilde($configFile);
 
         return $this->loadConfigFile();
     }

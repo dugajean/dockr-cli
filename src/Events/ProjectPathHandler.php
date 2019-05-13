@@ -44,7 +44,7 @@ class ProjectPathHandler implements EventHandlerInterface
 
             $input = $event->getInput();
 
-            if ($input->hasOption('project-path') === true) {
+            if ($input->hasParameterOption(['--project-path'], true) === true) {
                 $this->config->setConfigFile($input->getOption('project-path'));
             }
         };

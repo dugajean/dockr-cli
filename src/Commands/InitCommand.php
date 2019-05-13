@@ -13,11 +13,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use function Dockr\Helpers\{
-    comma_list,
     color,
+    slash,
+    ends_with,
+    comma_list,
     snake_case,
     starts_with,
-    ends_with,
     current_path
 };
 
@@ -354,8 +355,8 @@ class InitCommand extends Command
 
         foreach ($this->stubsFinder as $file) {
             $path = $file->getRelativePathname();
-            if (starts_with($path, '.docker/') && ends_with($path, '.yml.stub')) {
-                $addon = str_replace(['.docker/docker-compose.', '.yml.stub'], '', $path);
+            if (starts_with($path, slash('.docker/')) && ends_with($path, '.yml.stub')) {
+                $addon = str_replace([slash('.docker/docker-compose.'), '.yml.stub'], '', $path);
 
                 if ($addon == 'yml.stub') {
                     continue;

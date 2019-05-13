@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dockr\Helpers;
 
 use Symfony\Component\Process\Process;
+use Dockr\Config;
 
 /**
  * Convert case to studly.
@@ -56,7 +57,9 @@ function snake_case(string $str, string $delimiter = '_'): string
  */
 function current_path(string $path): string
 {
-    return './' . $path;
+    $root = dirname(pouch()->get(Config::class)->getConfigFile()) . DIRECTORY_SEPARATOR;
+
+    return $root . $path;
 }
 
 /**
@@ -88,8 +91,7 @@ function color(string $mode, string $str, bool $padded = false): string
         $str = "{$padding}\n  {$str}  \n{$padding}";
     }
 
-    switch ($mode)
-    {
+    switch ($mode) {
         case 'green':
         case 'success':
             $tag = 'info';
@@ -131,8 +133,7 @@ function comma_list(array $array): string
  */
 function starts_with(string $haystack, $needles): bool
 {
-    foreach ((array)$needles as $needle)
-    {
+    foreach ((array)$needles as $needle) {
         if ($needle != '' && strpos($haystack, $needle) === 0) {
             return true;
         }
@@ -175,9 +176,9 @@ function process(string $command, array $env = []): string
     $process->start(null, $env);
     $process->wait(function ($type, $buffer) {
         if (Process::ERR === $type) {
-            echo 'ERR > '.$buffer;
+            echo 'ERR > ' . $buffer;
         } else {
-            echo 'OUT > '.$buffer;
+            echo 'OUT > ' . $buffer;
         }
     });
 
@@ -193,7 +194,7 @@ function process(string $command, array $env = []): string
 function array_flatten(array $array): array
 {
     $return = [];
-    array_walk_recursive($array, function($x) use (&$return) { $return[] = $x; });
+    array_walk_recursive($array, function ($x) use (&$return) { $return[] = $x; });
 
     return $return;
 }
@@ -220,4 +221,40 @@ function is_assoc(array $array): bool
 function add_slash(string $str): string
 {
     return (!starts_with($str, '/') ? '/' : '') . (string)$str;
+}
+
+/**
+ * Expands the posix tilde (~) to the current home directory.
+ *
+ * @param string $path
+ *
+ * @return string
+ */
+function expand_tilde(string $path): string
+{
+    if (strpos($path, '~') === false) {
+        return $path;
+    }
+
+    $home = getenv('HOME');
+    if (!empty($home)) {
+        $home = rtrim($home, DIRECTORY_SEPARATOR);
+    } elseif (!empty($_SERVER['HOMEDRIVE']) && !empty($_SERVER['HOMEPATH'])) {
+        $home = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
+        $home = rtrim($home, DIRECTORY_SEPARATOR);
+    }
+
+    return !empty($home) ? str_replace('~', $home, $path) : $path;
+}
+
+/**
+ * Fixes the slashes according to the OS.
+ *
+ * @param string $path
+ *
+ * @return string
+ */
+function slash(string $path): string
+{
+    return str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
 }

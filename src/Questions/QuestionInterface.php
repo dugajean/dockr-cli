@@ -18,5 +18,5 @@ interface QuestionInterface
      *
      * @return self
      */
-    public function render(): Question;
+    public function render();
 }
