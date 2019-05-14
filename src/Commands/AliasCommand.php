@@ -234,7 +234,7 @@ final class AliasCommand
         $parsedArguments = $matches[1];
         foreach ($parsedArguments as $key => $arg) {
             if (in_array($arg, $this->reserved)) {
-                $command = str_replace("{{$arg}}", env($arg, ''), $command);
+                $command = str_replace("{{$arg}}", current_path(), $command);
                 unset($parsedArguments[$key]);
             }
         }

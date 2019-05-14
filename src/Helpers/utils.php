@@ -57,7 +57,9 @@ function snake_case(string $str, string $delimiter = '_'): string
  */
 function current_path(string $path = ''): string
 {
-    $root = add_slash(env('DOCKR_PATH', ''), 'end') ?: '.' . DIRECTORY_SEPARATOR;
+    $defaultPath = \Phar::running() ? add_slash(getcwd(), 'end') : '.' . DIRECTORY_SEPARATOR;
+
+    $root = add_slash(env('DOCKR_PATH', ''), 'end') ?: $defaultPath;
 
     return $root . $path;
 }
@@ -214,6 +216,10 @@ function is_assoc(array $array): bool
  */
 function add_slash(string $str, string $position = 'start'): string
 {
+    if (!$str) {
+        return '';
+    }
+
     $func = __NAMESPACE__ . '\\' . ($position === 'start' ? 'starts_with' : 'ends_with');
 
     if ($position == 'start') {

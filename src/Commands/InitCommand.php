@@ -459,7 +459,7 @@ class InitCommand extends Command
             ],
             'ssh' => [
                 'help' => 'SSH into a container',
-                'commands' => [slash('docker-compose -f {DOCKR_PATH}/.docker/docker-compose.yml exec {container} bash')]
+                'commands' => [slash('docker-compose -f {DOCKR_PATH}.docker/docker-compose.yml exec {container} bash')]
             ]
         ];
 
@@ -478,10 +478,10 @@ class InitCommand extends Command
         $mode = $mode == 'up' ? 'up -d' : 'down';
 
         $upCommand = "docker-compose ~ {$mode}";
-        $composeFiles = '-f {DOCKR_PATH}/.docker/docker-compose.yml';
+        $composeFiles = '-f {DOCKR_PATH}.docker/docker-compose.yml';
 
         foreach ((array)$this->getAnswer('addons') as $addon) {
-            $file = "{DOCKR_PATH}/.docker/docker-compose.{$addon}.yml";
+            $file = "{DOCKR_PATH}.docker/docker-compose.{$addon}.yml";
 
             if (!file_exists($file)) {
                 continue;
