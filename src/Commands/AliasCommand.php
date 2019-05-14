@@ -229,7 +229,7 @@ final class AliasCommand
      */
     private function parseArguments(string &$command): array
     {
-        preg_match_all('~\{([^}]*)\}~', $command, $matches);
+        preg_match_all('~\{([^} ]*)\}~', $command, $matches);
         
         $parsedArguments = $matches[1];
         foreach ($parsedArguments as $key => $arg) {
