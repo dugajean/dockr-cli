@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Dockr;
 
-use function Dockr\Helpers\{ends_with, expand_tilde};
+use function Dockr\Helpers\{
+    ends_with,
+    expand_tilde,
+    current_path
+};
 
 final class Config
 {
@@ -40,9 +44,7 @@ final class Config
      */
     public function __construct()
     {
-        // $this->configFile = getcwd() . DIRECTORY_SEPARATOR . 'dockr.json';
-
-        $this->loadConfigFile();   
+        $this->setConfigFile(current_path());
     }
 
     /**
@@ -97,7 +99,7 @@ final class Config
      *
      * @return string
      */
-    public function getConfigFile(): string
+    public function getConfigFile(): ?string
     {
         return $this->configFile;
     }
@@ -156,7 +158,7 @@ final class Config
      */
     private function loadConfigFile(): self
     {
-        if (file_exists($this->configFile)) {
+        if ($this->configFile && file_exists($this->configFile)) {
             $this->data = json_decode(file_get_contents($this->configFile), true);
         }
 

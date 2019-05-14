@@ -9,8 +9,10 @@ use Dockr\Events\ProjectPathHandler;
 use Dockr\Events\EventHandlerInterface;
 use Symfony\Component\Console\Application;
 use Dockr\GlobalArguments\ProjectPathOption;
+use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\CommandLoader\FactoryCommandLoader;
+use Dockr\Events\TestErrorHandler;
 
 final class App
 {
@@ -79,7 +81,20 @@ final class App
     private function attachEventsDispatcher(): void
     {
         $addListener = function (EventHandlerInterface $eventHandler): void {
-            $this->eventDispatcher->addListener($eventHandler->onEvent(), $eventHandler->handler());
+            
+            $events = [
+                ConsoleEvents::COMMAND, 
+                ConsoleEvents::ERROR, 
+                ConsoleEvents::TERMINATE
+            ];
+            
+            $event = $eventHandler->onEvent();
+            
+            if (!in_array($eventHandler->onEvent(), $events)) {
+                throw new \RuntimeException('Bad event: ' . $event);
+            } 
+
+            $this->eventDispatcher->addListener($eventHandler->onEvent(), $eventHandler->handle());
         };
 
         $addListener(new ProjectPathHandler($this->config));

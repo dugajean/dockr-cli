@@ -23,5 +23,5 @@ interface EventHandlerInterface
      *
      * @return \Closure
      */
-    public function handler(): \Closure;
+    public function handle(): \Closure;
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Dockr\Helpers;
 
-use Symfony\Component\Process\Process;
 use Dockr\Config;
+use Symfony\Component\Process\Process;
 
 /**
  * Convert case to studly.
@@ -49,15 +49,15 @@ function snake_case(string $str, string $delimiter = '_'): string
 }
 
 /**
- * Prepends ./ to a path.
+ * Resolves the current path.
  *
  * @param string $path
  *
  * @return string
  */
-function current_path(string $path): string
+function current_path(string $path = ''): string
 {
-    $root = dirname(pouch()->get(Config::class)->getConfigFile()) . DIRECTORY_SEPARATOR;
+    $root = add_slash(env('DOCKR_PATH', ''), 'end') ?: '.' . DIRECTORY_SEPARATOR;
 
     return $root . $path;
 }
@@ -174,13 +174,7 @@ function process(string $command, array $env = []): string
     $process = (Process::fromShellCommandline($command))->setTty(Process::isTtySupported());
     $process->setTimeout(3600);
     $process->start(null, $env);
-    $process->wait(function ($type, $buffer) {
-        if (Process::ERR === $type) {
-            echo 'ERR > ' . $buffer;
-        } else {
-            echo 'OUT > ' . $buffer;
-        }
-    });
+    $process->wait(function ($type, $buffer) { echo $buffer; });
 
     return $process->getOutput();
 }
@@ -218,9 +212,15 @@ function is_assoc(array $array): bool
  *
  * @return string
  */
-function add_slash(string $str): string
+function add_slash(string $str, string $position = 'start'): string
 {
-    return (!starts_with($str, '/') ? '/' : '') . (string)$str;
+    $func = __NAMESPACE__ . '\\' . ($position === 'start' ? 'starts_with' : 'ends_with');
+
+    if ($position == 'start') {
+        return (!$func($str, DIRECTORY_SEPARATOR) ? DIRECTORY_SEPARATOR : '') . $str;
+    }
+    
+    return $str . (!$func($str, DIRECTORY_SEPARATOR) ? DIRECTORY_SEPARATOR : '');
 }
 
 /**
@@ -257,4 +257,42 @@ function expand_tilde(string $path): string
 function slash(string $path): string
 {
     return str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+}
+
+/**
+ * Gets the value of an environment variable. Supports boolean, empty and null.
+ *
+ * @param  string  $key
+ * @param  mixed   $default
+ * 
+ * @return mixed
+ */
+function env($key, $default = null)
+{
+    $value = getenv($key);
+
+    if ($value === false) {
+        return $default;
+    }
+
+    switch (strtolower($value)) {
+        case 'true':
+        case '(true)':
+            return true;
+        case 'false':
+        case '(false)':
+            return false;
+        case 'empty':
+        case '(empty)':
+            return '';
+        case 'null':
+        case '(null)':
+            return;
+    }
+
+    if (starts_with($value, '"') && ends_with($value, '"')) {
+        return substr($value, 1, -1);
+    }
+
+    return $value;
 }

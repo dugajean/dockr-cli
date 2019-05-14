@@ -38,14 +38,11 @@ class ProjectPathHandler implements EventHandlerInterface
      *
      * @return void
      */
-    public function handler(): \Closure
+    public function handle(): \Closure
     {
         return function (ConsoleCommandEvent $event) {
-
-            $input = $event->getInput();
-
-            if ($input->hasParameterOption(['--project-path'], true) === true) {
-                $this->config->setConfigFile($input->getOption('project-path'));
+            if ($event->getInput()->hasParameterOption(['--project-path']) === true) {
+                $this->config->setConfigFile($event->getInput()->getOption('project-path'));
             }
         };
     }

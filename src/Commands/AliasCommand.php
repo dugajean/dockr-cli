@@ -10,10 +10,22 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use function Dockr\Helpers\{add_slash, process, color, current_path, array_flatten, is_assoc};
+
+use function Dockr\Helpers\{
+    env,
+    color, 
+    process, 
+    is_assoc,
+    add_slash, 
+    current_path, 
+    array_flatten
+};
 
 final class AliasCommand
 {
+    /**
+     * Alias command types
+     */
     const TYPE_SHELL = 'shell';
     const TYPE_CLASS = 'class';
 
@@ -46,6 +58,13 @@ final class AliasCommand
      * @var Dotenv
      */
     private $dotenv;
+
+    /**
+     * A list of replacements that are reserved and wont be parsed as args.
+     *
+     * @var array
+     */
+    private $reserved = ['DOCKR_PATH'];
 
     /**
      * AliasParser constructor.
@@ -136,7 +155,7 @@ final class AliasCommand
 
                 foreach ($commandList as $command) {
                     $this->setDescription($command->help);
-                    foreach ($command->arguments as $argument) {
+                    foreach ($command->args as $argument) {
                         $this->addArgument($argument, InputArgument::REQUIRED);
                     }
                 }
@@ -149,7 +168,7 @@ final class AliasCommand
             {
                 foreach ($this->alias->getCommand() as $command) {
                     $commandStr = $command->body;
-                    foreach ($command->arguments as $argument) {
+                    foreach ($command->args as $argument) {
                         $commandStr = str_replace("{{$argument}}", $input->getArgument($argument), $commandStr);
                     }
 
@@ -176,10 +195,10 @@ final class AliasCommand
 
             $parsedCommand = array_map(function ($item) use ($helpTxt) {
                 $object = new \stdClass;
-                $object->body = $item;
-                preg_match_all('~\{([^}]*)\}~', $item, $matches);
-                $object->arguments = $matches[1];
+
+                $object->args = $this->parseArguments($item);
                 $object->help = $helpTxt;
+                $object->body = $item;
 
                 return $object;
             }, $cmdList);
@@ -197,6 +216,30 @@ final class AliasCommand
         }
 
         return $parsedCommand;
+    }
+
+    /**
+     * Parses the arguments in the commands string and also
+     * checks for reserved keys within the string and replaces them
+     * with their respective environment variable in the string directly.
+     *
+     * @param string $command
+     *
+     * @return array
+     */
+    private function parseArguments(string &$command): array
+    {
+        preg_match_all('~\{([^}]*)\}~', $command, $matches);
+        
+        $parsedArguments = $matches[1];
+        foreach ($parsedArguments as $key => $arg) {
+            if (in_array($arg, $this->reserved)) {
+                $command = str_replace("{{$arg}}", env($arg, ''), $command);
+                unset($parsedArguments[$key]);
+            }
+        }
+
+        return $parsedArguments;
     }
 
     /**

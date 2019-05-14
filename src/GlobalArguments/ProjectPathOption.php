@@ -12,7 +12,7 @@ class ProjectPathOption implements GlobalArgumentInterface
     /**
      * Returns InputOption instance to add to definition.
      *
-     * @return \Symfony\Component\Console\Input\InputArgument|null
+     * @return \Symfony\Component\Console\Input\InputOption|null
      */
     public function getOption(): ?InputOption
     {
