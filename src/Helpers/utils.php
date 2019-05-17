@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Dockr\Helpers;
 
-use Dockr\Config;
 use Symfony\Component\Process\Process;
 
 /**
@@ -154,8 +153,8 @@ function starts_with(string $haystack, $needles): bool
  */
 function ends_with(string $haystack, $needles): bool
 {
-    foreach ((array) $needles as $needle) {
-        if ((string) $needle === substr($haystack, -strlen($needle))) {
+    foreach ((array)$needles as $needle) {
+        if ((string)$needle === substr($haystack, -strlen($needle))) {
             return true;
         }
     }

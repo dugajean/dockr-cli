@@ -135,7 +135,7 @@ class InitCommand extends Command
      */
     protected function fromOptions(string $name, string $domain): void
     {
-        $webServer  = $this->input->getOption('webserver');
+        $webServer = $this->input->getOption('webserver');
         $cacheStore = $this->input->getOption('cache');
         $phpVersion = $this->input->getOption('php');
 
@@ -231,7 +231,8 @@ class InitCommand extends Command
     {
         $this->answers['webServer'] = (new ChoiceQuestion(
             'Please select the webserver you want your project to run on: ',
-            SwitchWebServerCommand::getChoices(), 0
+            SwitchWebServerCommand::getChoices(),
+            0
         ))
             ->render()
             ->outputAnswer()
@@ -247,7 +248,8 @@ class InitCommand extends Command
     {
         $this->answers['cacheStore'] = (new ChoiceQuestion(
             'Please select the cache store you want your project to run on: ',
-            SwitchCacheStoreCommand::getChoices(), 0
+            SwitchCacheStoreCommand::getChoices(),
+            0
         ))
             ->render()
             ->outputAnswer()
@@ -263,7 +265,8 @@ class InitCommand extends Command
     {
         $this->answers['phpVersion'] = (new ChoiceQuestion(
             'Please select the PHP version you want your project to run on',
-            SwitchPhpVersionCommand::getChoices(), 2
+            SwitchPhpVersionCommand::getChoices(),
+            2
         ))
             ->render()
             ->outputAnswer()
@@ -317,7 +320,10 @@ class InitCommand extends Command
 
         $question = (new ChoiceQuestion(
             'Please choose which PHP extensions should be included in your project (comma separated list): ',
-            array_keys($phpExts), 0, true, true
+            array_keys($phpExts),
+            0,
+            true,
+            true
         ))->render();
 
         $question->adjustAnswer(function ($choices) use (&$phpExts) {
@@ -339,7 +345,7 @@ class InitCommand extends Command
             return array_unique($resultArray);
         })->outputAnswer();
 
-        $this->answers['phpExtensions'] = array_map(function($item) use ($phpExts) {
+        $this->answers['phpExtensions'] = array_map(function ($item) use ($phpExts) {
             return $phpExts[$item];
         }, $question->getAnswer());
     }
@@ -368,7 +374,10 @@ class InitCommand extends Command
 
         $this->answers['addons'] = (new ChoiceQuestion(
             'Include optional addons to your setup (comma separated list): ',
-            $addons, 0, true, true
+            $addons,
+            0,
+            true,
+            true
         ))
             ->render()
             ->outputAnswer()

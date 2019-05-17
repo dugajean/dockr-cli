@@ -75,8 +75,13 @@ final class AliasCommand
      * @param Config          $config
      * @param Dotenv          $dotenv
      */
-    public function __construct($name, $command, OutputInterface $output, Config $config, Dotenv $dotenv)
-    {
+    public function __construct(
+        string $name, 
+        $command, 
+        OutputInterface $output, 
+        Config $config, 
+        Dotenv $dotenv
+    ) {
         $this->name = $name;
         $this->output = $output;
         $this->command = $this->prepareCommand($command);
@@ -125,7 +130,7 @@ final class AliasCommand
      */
     private function anonymousCommand(): Command
     {
-        return new class ($this) extends Command
+        return new class($this) extends Command
         {
             /**
              * @var \Dockr\Commands\AliasCommand
