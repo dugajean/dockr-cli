@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Dockr;
 
-use Dockr\EventSubscriber;
 use Dockr\Events\ProjectPathHandler;
 use Dockr\Events\EventHandlerInterface;
 use Symfony\Component\Console\Application;
@@ -12,7 +11,6 @@ use Dockr\GlobalArguments\ProjectPathOption;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\CommandLoader\FactoryCommandLoader;
-use Dockr\Events\TestErrorHandler;
 
 final class App
 {
@@ -63,8 +61,7 @@ final class App
         EventDispatcherInterface $eventDispatcher,
         FactoryCommandLoader $factoryCommandLoader,
         array $commands
-    )
-    {
+    ) {
         $this->config = $config;
         $this->application = $app;
         $this->eventSubscriber = $eventSubscriber;
@@ -81,18 +78,17 @@ final class App
     private function attachEventsDispatcher(): void
     {
         $addListener = function (EventHandlerInterface $eventHandler): void {
-            
             $events = [
-                ConsoleEvents::COMMAND, 
-                ConsoleEvents::ERROR, 
+                ConsoleEvents::COMMAND,
+                ConsoleEvents::ERROR,
                 ConsoleEvents::TERMINATE
             ];
-            
+
             $event = $eventHandler->onEvent();
-            
+
             if (!in_array($eventHandler->onEvent(), $events)) {
                 throw new \RuntimeException('Bad event: ' . $event);
-            } 
+            }
 
             $this->eventDispatcher->addListener($eventHandler->onEvent(), $eventHandler->handle());
         };
