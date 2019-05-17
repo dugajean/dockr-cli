@@ -5,7 +5,7 @@
 [![Total Downloads](https://poser.pugx.org/dugajean/dockr-cli/downloads)](https://packagist.org/packages/dugajean/dockr-cli) 
 [![License](https://poser.pugx.org/dugajean/dockr-cli/license)](https://packagist.org/packages/dugajean/dockr-cli) 
 
-Easy Docker Compose setup for your LAMP and LEMP projects.
+Easy docker-compose local development setup for your LAMP and LEMP projects.
 
 ## Requirements
 

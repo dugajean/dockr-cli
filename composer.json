@@ -1,7 +1,7 @@
 {
     "name": "dugajean/dockr-cli",
     "type": "library",
-    "description": "Easy Docker Compose setup for your LAMP and LEMP projects.",
+    "description": "Easy docker-compose local development setup for your LAMP and LEMP projects. ",
     "keywords": ["docker", "container", "dockr", "docker-compose", "cli"],
     "homepage": "http://dukagj.in",
     "license": "MIT",
